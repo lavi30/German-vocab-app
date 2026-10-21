@@ -1,0 +1,5205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>B1 Wortschatz Trainer</title>
+  <style>
+    :root {
+      --der-color: #2563eb;
+      --der-bg: #eff6ff;
+      --der-border: #93c5fd;
+      --die-color: #dc2626;
+      --die-bg: #fef2f2;
+      --die-border: #fca5a5;
+      --das-color: #16a34a;
+      --das-bg: #f0fdf4;
+      --das-border: #86efac;
+      --bg-color: #f8fafc;
+      --surface-color: #ffffff;
+      --surface-elevated: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --accent-xp: #f59e0b;
+      --accent-streak: #ea580c;
+      --accent-heart: #ef4444;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.05);
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #0f172a;
+      --surface-color: #1e293b;
+      --surface-elevated: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+      --der-bg: #1e3a8a;
+      --die-bg: #881337;
+      --das-bg: #14532d;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.5);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.6);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    /* Article specific styling */
+    .article-der { color: var(--der-color); font-weight: 700; }
+    .article-die { color: var(--die-color); font-weight: 700; }
+    .article-das { color: var(--das-color); font-weight: 700; }
+
+    .badge-der { background: var(--der-bg); color: var(--der-color); border: 1.5px solid var(--der-border); }
+    .badge-die { background: var(--die-bg); color: var(--die-color); border: 1.5px solid var(--die-border); }
+    .badge-das { background: var(--das-bg); color: var(--das-color); border: 1.5px solid var(--das-border); }
+
+    .btn-der { background: var(--der-color); color: #fff; }
+    .btn-die { background: var(--die-color); color: #fff; }
+    .btn-das { background: var(--das-color); color: #fff; }
+
+    /* Top Sticky Header */
+    #app-header {
+      padding: calc(var(--safe-top) + 8px) 16px 8px 16px;
+      background: var(--surface-color);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      z-index: 50;
+      flex-shrink: 0;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .level-badge {
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .header-stats {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .stat-pill {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+    .stat-pill:active {
+      transform: scale(0.95);
+    }
+    .stat-hearts { color: var(--accent-heart); }
+    .stat-streak { color: var(--accent-streak); }
+    .stat-xp { color: var(--accent-xp); }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-color);
+      background: var(--surface-color);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.15s ease, background-color 0.2s ease;
+    }
+    .icon-btn:active {
+      transform: scale(0.92);
+    }
+
+    /* Main Content Area */
+    #main-viewport {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      width: 100%;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 16px 16px calc(var(--safe-bottom) + 80px) 16px;
+    }
+    .screen.active {
+      display: flex;
+    }
+
+    /* Bottom Navigation */
+    #bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: calc(64px + var(--safe-bottom));
+      padding-bottom: var(--safe-bottom);
+      background: var(--surface-color);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 50;
+      box-shadow: 0 -4px 10px rgba(0,0,0,0.03);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 25%;
+      height: 100%;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: color 0.2s ease;
+      position: relative;
+    }
+    .nav-item.active {
+      color: var(--primary);
+    }
+    .nav-icon {
+      font-size: 1.35rem;
+      line-height: 1;
+      margin-bottom: 3px;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .nav-item.active .nav-icon {
+      transform: scale(1.15) translateY(-2px);
+    }
+    .nav-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+    .nav-badge {
+      position: absolute;
+      top: 6px;
+      right: calc(50% - 20px);
+      background: var(--die-color);
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 800;
+      min-width: 17px;
+      height: 17px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+    }
+
+    /* Learn Screen: Map & Units */
+    .map-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .map-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    .map-subtitle {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .rule-tendency-footnote {
+      background: var(--surface-color);
+      border: 1px dashed var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .rule-tags-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+    .article-tag {
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    /* Vertical Winding Path */
+    .path-container {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+      padding: 20px 0 40px 0;
+    }
+
+    .path-svg-line {
+      position: absolute;
+      top: 40px;
+      bottom: 40px;
+      left: 0;
+      width: 100%;
+      height: calc(100% - 80px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .unit-node-wrapper {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .unit-node-wrapper:active {
+      transform: scale(0.94);
+    }
+
+    .unit-circle {
+      width: 86px;
+      height: 86px;
+      border-radius: var(--radius-full);
+      background: var(--surface-color);
+      border: 4px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .unit-node-wrapper.active .unit-circle {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 6px rgba(79, 70, 229, 0.2), var(--shadow-lg);
+      animation: pulse-ring 2s infinite;
+    }
+
+    .unit-node-wrapper.completed .unit-circle {
+      border-color: #10b981;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff;
+    }
+
+    .unit-node-wrapper.locked .unit-circle {
+      opacity: 0.6;
+      background: var(--bg-color);
+    }
+
+    @keyframes pulse-ring {
+      0% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4), var(--shadow-lg); }
+      70% { box-shadow: 0 0 0 14px rgba(79, 70, 229, 0), var(--shadow-lg); }
+      100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0), var(--shadow-lg); }
+    }
+
+    .unit-emoji {
+      font-size: 2rem;
+      line-height: 1;
+    }
+
+    .unit-stars {
+      position: absolute;
+      bottom: -10px;
+      display: flex;
+      gap: 2px;
+      background: var(--surface-color);
+      padding: 2px 6px;
+      border-radius: var(--radius-full);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      font-size: 0.72rem;
+    }
+
+    .unit-label-box {
+      margin-top: 10px;
+      text-align: center;
+    }
+    .unit-label-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+    }
+    .unit-label-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Modal / Bottom Sheet */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .modal-backdrop.open {
+      display: flex;
+      opacity: 1;
+    }
+
+    .modal-sheet {
+      background: var(--surface-color);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      width: 100%;
+      max-width: 600px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: var(--shadow-lg);
+      padding-bottom: calc(var(--safe-bottom) + 16px);
+    }
+    .modal-backdrop.open .modal-sheet {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+    }
+    .modal-body {
+      padding: 16px 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .lesson-row-card {
+      background: var(--bg-color);
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .lesson-row-card:active {
+      transform: scale(0.98);
+    }
+    .lesson-row-card.completed {
+      border-color: #10b981;
+      background: rgba(16, 185, 129, 0.08);
+    }
+    .lesson-row-card.locked {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .boss-quiz-card {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #fff;
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      box-shadow: var(--shadow-md);
+      margin-top: 6px;
+      transition: transform 0.2s ease;
+    }
+    .boss-quiz-card:active {
+      transform: scale(0.98);
+    }
+
+    /* Lesson Screen & Game Loop */
+    #lesson-screen {
+      padding: calc(var(--safe-top) + 12px) 16px 24px 16px;
+      max-width: 580px;
+    }
+
+    .lesson-top-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      width: 100%;
+    }
+    .lesson-close-btn {
+      font-size: 1.3rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      border: none;
+      background: none;
+      padding: 6px;
+    }
+    .progress-track {
+      flex: 1;
+      height: 12px;
+      background: var(--border-color);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      position: relative;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10b981, #059669);
+      width: 0%;
+      transition: width 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border-radius: var(--radius-full);
+    }
+    .lesson-hearts {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--accent-heart);
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .step-container {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      width: 100%;
+      align-items: center;
+    }
+
+    /* Flip Card Styles */
+    .flip-card-wrapper {
+      width: 100%;
+      perspective: 1200px;
+      margin: 16px 0;
+      min-height: 380px;
+      display: flex;
+    }
+
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      min-height: 380px;
+      text-align: center;
+      transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+      transform-style: preserve-3d;
+      cursor: pointer;
+    }
+
+    .flip-card-inner.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .flip-card-front, .flip-card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-lg);
+      border: 2px solid var(--border-color);
+      background: var(--surface-color);
+    }
+
+    .flip-card-back {
+      transform: rotateY(180deg);
+      background: var(--surface-color);
+      justify-content: space-between;
+    }
+
+    .card-emoji {
+      font-size: 4.5rem;
+      margin-bottom: 12px;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+    }
+
+    .card-word {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    .card-pos-chip {
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+
+    .tap-hint {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-meaning-en {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 2px;
+    }
+    .card-meaning-hi {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 12px;
+    }
+
+    .card-example-box {
+      background: var(--bg-color);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      width: 100%;
+      text-align: left;
+      margin: 8px 0;
+      border-left: 4px solid var(--primary);
+    }
+    .card-example-de {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .card-example-en {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .rule-chip {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fde68a;
+      border-radius: var(--radius-full);
+      padding: 4px 12px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin: 6px 0;
+    }
+    [data-theme="dark"] .rule-chip {
+      background: #78350f;
+      color: #fde68a;
+      border-color: #92400e;
+    }
+
+    .exception-badge {
+      background: #fef08a;
+      color: #854d0e;
+      border: 1.5px solid #eab308;
+      border-radius: var(--radius-full);
+      padding: 3px 10px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin: 4px 0;
+    }
+
+    .audio-btns-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .audio-btn {
+      padding: 8px 16px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-color);
+      background: var(--bg-color);
+      color: var(--text-main);
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .audio-btn:active {
+      transform: scale(0.95);
+      background: var(--border-color);
+    }
+
+    .card-action-bar {
+      width: 100%;
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .btn-primary {
+      flex: 1;
+      height: 52px;
+      border-radius: var(--radius-md);
+      background: var(--primary);
+      color: #fff;
+      font-size: 1.05rem;
+      font-weight: 800;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #3730a3;
+      transition: all 0.1s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-primary:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #3730a3;
+    }
+
+    .btn-secondary {
+      height: 52px;
+      padding: 0 18px;
+      border-radius: var(--radius-md);
+      background: transparent;
+      color: var(--text-muted);
+      border: 2px solid var(--border-color);
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-secondary:active {
+      background: var(--bg-color);
+      transform: scale(0.97);
+    }
+
+    /* MCQ Step */
+    .mcq-question-header {
+      text-align: center;
+      margin: 10px 0 20px 0;
+      width: 100%;
+    }
+    .mcq-prompt-word {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-top: 6px;
+    }
+
+    .mcq-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .mcq-option {
+      background: var(--surface-color);
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.15s ease;
+    }
+    .mcq-option:active {
+      transform: scale(0.98);
+    }
+    .mcq-option.correct {
+      border-color: #10b981;
+      background: rgba(16, 185, 129, 0.12);
+      color: #047857;
+    }
+    .mcq-option.wrong {
+      border-color: #ef4444;
+      background: rgba(239, 68, 68, 0.12);
+      color: #b91c1c;
+      animation: shake 0.4s ease;
+    }
+
+    /* Article MCQ Step */
+    .article-btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      width: 100%;
+      margin: 20px 0;
+    }
+    .article-select-btn {
+      height: 64px;
+      border-radius: var(--radius-md);
+      font-size: 1.5rem;
+      font-weight: 900;
+      border: 2.5px solid transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-md);
+      transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .article-select-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* Fill Blank Step */
+    .cloze-sentence-card {
+      background: var(--surface-color);
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px 20px;
+      width: 100%;
+      text-align: center;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+    .cloze-german {
+      font-size: 1.25rem;
+      font-weight: 700;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+    .cloze-blank {
+      display: inline-block;
+      min-width: 90px;
+      border-bottom: 3px solid var(--primary);
+      color: var(--primary);
+      font-weight: 800;
+      padding: 0 4px;
+    }
+    .cloze-english {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+    }
+
+    /* Typing Step */
+    .typing-card {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .typing-input {
+      width: 100%;
+      height: 56px;
+      border: 2.5px solid var(--border-color);
+      border-radius: var(--radius-md);
+      background: var(--surface-color);
+      color: var(--text-main);
+      font-size: 1.3rem;
+      font-weight: 700;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.2s ease;
+      margin-bottom: 12px;
+    }
+    .typing-input:focus {
+      border-color: var(--primary);
+    }
+    .umlaut-helpers-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .umlaut-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      background: var(--surface-color);
+      color: var(--text-main);
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-sm);
+    }
+    .umlaut-btn:active {
+      transform: scale(0.92);
+      background: var(--bg-color);
+    }
+
+    /* Feedback Banner */
+    .feedback-drawer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 20px 24px calc(var(--safe-bottom) + 20px) 24px;
+      z-index: 90;
+      display: none;
+      flex-direction: column;
+      transform: translateY(100%);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 -8px 20px rgba(0,0,0,0.15);
+    }
+    .feedback-drawer.open {
+      display: flex;
+      transform: translateY(0);
+    }
+    .feedback-drawer.correct {
+      background: #dcfce7;
+      border-top: 3px solid #16a34a;
+      color: #14532d;
+    }
+    [data-theme="dark"] .feedback-drawer.correct {
+      background: #052e16;
+      border-top-color: #22c55e;
+      color: #86efac;
+    }
+    .feedback-drawer.wrong {
+      background: #fee2e2;
+      border-top: 3px solid #dc2626;
+      color: #7f1d1d;
+    }
+    [data-theme="dark"] .feedback-drawer.wrong {
+      background: #450a0a;
+      border-top-color: #ef4444;
+      color: #fca5a5;
+    }
+    .feedback-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .feedback-desc {
+      font-size: 0.95rem;
+      margin-bottom: 14px;
+      line-height: 1.4;
+    }
+
+    /* Confetti Canvas */
+    #confetti-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* Sprint Game View */
+    .sprint-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+    }
+    .sprint-timer-bar {
+      width: 100%;
+      height: 10px;
+      background: var(--border-color);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      margin: 12px 0 20px 0;
+    }
+    .sprint-timer-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #f59e0b, #ef4444);
+      width: 100%;
+      transition: width 0.1s linear;
+    }
+    .sprint-stats-row {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      font-weight: 800;
+      font-size: 1.1rem;
+      margin-bottom: 16px;
+    }
+    .sprint-card {
+      background: var(--surface-color);
+      border: 3px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 36px 20px;
+      width: 100%;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+      margin-bottom: 24px;
+    }
+    .sprint-word {
+      font-size: 2.5rem;
+      font-weight: 900;
+      margin: 12px 0;
+    }
+    .combo-multiplier {
+      background: linear-gradient(135deg, #f59e0b, #ea580c);
+      color: #fff;
+      padding: 3px 12px;
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      font-weight: 900;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+
+    /* Stats View */
+    .stats-overview-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .stat-tile {
+      background: var(--surface-color);
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+    .stat-tile-val {
+      font-size: 1.8rem;
+      font-weight: 900;
+      margin-bottom: 2px;
+    }
+    .stat-tile-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .word-bank-search {
+      width: 100%;
+      height: 48px;
+      border-radius: var(--radius-md);
+      border: 1.5px solid var(--border-color);
+      background: var(--surface-color);
+      color: var(--text-main);
+      padding: 0 16px;
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+      outline: none;
+    }
+    .word-filter-pills {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+      scrollbar-width: none;
+    }
+    .filter-pill {
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-color);
+      background: var(--surface-color);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .filter-pill.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .word-list-table {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .word-list-row {
+      background: var(--surface-color);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Animations */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+    .shake {
+      animation: shake 0.4s ease;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 480px) {
+      .card-word { font-size: 1.85rem; }
+      .card-emoji { font-size: 3.5rem; }
+      .flip-card-wrapper { min-height: 350px; }
+      .flip-card-inner { min-height: 350px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Top App Bar -->
+  <header id="app-header">
+    <div class="header-left">
+      <div class="level-badge">
+        <span>🇩🇪 Level 1</span>
+      </div>
+    </div>
+    <div class="header-stats">
+      <div class="stat-pill stat-streak" id="streak-pill" title="Daily streak">
+        <span>🔥</span><span id="streak-count">1</span>
+      </div>
+      <div class="stat-pill stat-hearts" id="hearts-pill" title="Hearts (refill in Practice)">
+        <span>❤️</span><span id="hearts-count">3</span>
+      </div>
+      <div class="stat-pill stat-xp" id="xp-pill" title="XP Points">
+        <span>⚡</span><span id="xp-count">0</span>
+      </div>
+    </div>
+    <div class="header-controls">
+      <button class="icon-btn" id="speed-toggle-btn" title="Toggle slow audio" aria-label="Audio Speed">🐰</button>
+      <button class="icon-btn" id="sound-toggle-btn" title="Toggle audio sound" aria-label="Toggle Sound">🔊</button>
+      <button class="icon-btn" id="theme-toggle-btn" title="Toggle dark/light mode" aria-label="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <!-- Main Viewport -->
+  <main id="main-viewport">
+    <!-- SCREEN 1: LEARN (Map) -->
+    <section class="screen active" id="learn-screen">
+      <div class="map-header">
+        <h1 class="map-title">B1 Wortschatz Trainer</h1>
+        <p class="map-subtitle">Goethe-Zertifikat B1 Wortliste • 150 Words • 6 Units</p>
+      </div>
+
+      <div class="rule-tendency-footnote">
+        <div>
+          <strong>Noun Article System:</strong>
+          <div class="rule-tags-row">
+            <span class="article-tag badge-der">der = blue</span>
+            <span class="article-tag badge-die">die = red</span>
+            <span class="article-tag badge-das">das = green</span>
+          </div>
+          <p style="margin-top:6px; font-size:0.75rem; color:var(--text-muted);">
+            *These rules are strong tendencies, not 100% laws. Watch out for the yellow Exception badges!
+          </p>
+        </div>
+      </div>
+
+      <!-- Path of Units -->
+      <div class="path-container" id="units-path-container">
+        <!-- SVG Connecting line drawn dynamically -->
+        <svg class="path-svg-line" id="path-svg"></svg>
+        <!-- Unit Nodes populated by JS -->
+      </div>
+    </section>
+
+    <!-- SCREEN 2: PRACTICE / MISTAKE NOTEBOOK -->
+    <section class="screen" id="notebook-screen">
+      <div class="map-header">
+        <h2 class="map-title">Mistake Notebook 📓</h2>
+        <p class="map-subtitle">Review missed words & practice to restore hearts!</p>
+      </div>
+      <div style="margin-bottom:16px;">
+        <button class="btn-primary" id="practice-mistakes-btn" style="width:100%;">
+          <span>⚡ Practice Mistakes (+1 ❤️)</span>
+        </button>
+      </div>
+      <div id="mistakes-list" class="word-list-table">
+        <!-- Mistake cards inserted here -->
+      </div>
+    </section>
+
+    <!-- SCREEN 3: SPRINT (60s Article Speed Run) -->
+    <section class="screen" id="sprint-screen">
+      <div id="sprint-intro" style="text-align:center; padding:30px 10px;">
+        <div style="font-size:4rem; margin-bottom:12px;">⚡</div>
+        <h2 style="font-size:1.8rem; font-weight:800; margin-bottom:8px;">Article Sprint</h2>
+        <p style="color:var(--text-muted); margin-bottom:24px;">
+          60 Seconds! Tap <b>der</b>, <b>die</b>, or <b>das</b> as fast as you can. Build combos for bonus XP!
+        </p>
+        <div style="background:var(--surface-color); border:1.5px solid var(--border-color); border-radius:var(--radius-md); padding:16px; margin-bottom:24px;">
+          <div style="font-size:0.85rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Best Score</div>
+          <div style="font-size:2.4rem; font-weight:900; color:var(--accent-xp);" id="sprint-high-score">0</div>
+        </div>
+        <button class="btn-primary" id="start-sprint-btn" style="width:100%;">
+          <span>🚀 Start 60s Sprint</span>
+        </button>
+      </div>
+
+      <div id="sprint-game" class="sprint-container" style="display:none; width:100%;">
+        <div class="sprint-stats-row">
+          <div>⏳ <span id="sprint-time-left">60</span>s</div>
+          <div><span class="combo-multiplier" id="sprint-combo-badge">1x Combo</span></div>
+          <div>🏆 <span id="sprint-current-score">0</span> pts</div>
+        </div>
+        <div class="sprint-timer-bar">
+          <div class="sprint-timer-fill" id="sprint-timer-fill"></div>
+        </div>
+
+        <div class="sprint-card">
+          <div class="card-emoji" id="sprint-word-emoji">📦</div>
+          <div class="sprint-word" id="sprint-word-german">Wort</div>
+          <div style="font-size:0.95rem; color:var(--text-muted);" id="sprint-word-meaning">Meaning</div>
+        </div>
+
+        <div class="article-btn-row">
+          <button class="article-select-btn btn-der" data-art="der">der</button>
+          <button class="article-select-btn btn-die" data-art="die">die</button>
+          <button class="article-select-btn btn-das" data-art="das">das</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN 4: STATS & WORD BANK -->
+    <section class="screen" id="stats-screen">
+      <div class="map-header">
+        <h2 class="map-title">Mastery & Stats 📊</h2>
+        <p class="map-subtitle">Track your B1 Wortschatz progress & German noun accuracy</p>
+      </div>
+
+      <div class="stats-overview-grid">
+        <div class="stat-tile">
+          <div class="stat-tile-val" id="stats-mastered-val" style="color:#10b981;">0</div>
+          <div class="stat-tile-label">Words Mastered</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-tile-val" id="stats-xp-val" style="color:var(--accent-xp);">0</div>
+          <div class="stat-tile-label">Total XP</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-tile-val" id="stats-streak-val" style="color:var(--accent-streak);">1</div>
+          <div class="stat-tile-label">Day Streak</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-tile-val" id="stats-accuracy-val">0%</div>
+          <div class="stat-tile-label">Article Accuracy</div>
+        </div>
+      </div>
+
+      <!-- Article Breakdown -->
+      <div style="background:var(--surface-color); border:1.5px solid var(--border-color); border-radius:var(--radius-md); padding:16px; margin-bottom:24px;">
+        <h3 style="font-size:1rem; font-weight:800; margin-bottom:12px;">Article Performance</h3>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:700; margin-bottom:4px;">
+              <span class="article-der">der (Masculine)</span>
+              <span id="stat-der-pct">0%</span>
+            </div>
+            <div style="height:8px; background:var(--border-color); border-radius:var(--radius-full); overflow:hidden;">
+              <div id="stat-der-bar" style="height:100%; width:0%; background:var(--der-color);"></div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:700; margin-bottom:4px;">
+              <span class="article-die">die (Feminine)</span>
+              <span id="stat-die-pct">0%</span>
+            </div>
+            <div style="height:8px; background:var(--border-color); border-radius:var(--radius-full); overflow:hidden;">
+              <div id="stat-die-bar" style="height:100%; width:0%; background:var(--die-color);"></div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:700; margin-bottom:4px;">
+              <span class="article-das">das (Neuter)</span>
+              <span id="stat-das-pct">0%</span>
+            </div>
+            <div style="height:8px; background:var(--border-color); border-radius:var(--radius-full); overflow:hidden;">
+              <div id="stat-das-bar" style="height:100%; width:0%; background:var(--das-color);"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Searchable Word Bank -->
+      <div style="margin-bottom:14px;">
+        <h3 style="font-size:1.1rem; font-weight:800; margin-bottom:8px;">B1 Wortliste Directory (150 Words)</h3>
+        <input type="text" class="word-bank-search" id="word-search-input" placeholder="Search German, English, or Hindi...">
+        <div class="word-filter-pills" id="word-filter-pills">
+          <button class="filter-pill active" data-filter="all">All (150)</button>
+          <button class="filter-pill" data-filter="noun">Nouns</button>
+          <button class="filter-pill" data-filter="verb">Verbs</button>
+          <button class="filter-pill" data-filter="adj">Adjectives</button>
+          <button class="filter-pill" data-filter="mastered">Mastered ⭐</button>
+          <button class="filter-pill" data-filter="skipped">Skipped ⏭️</button>
+        </div>
+      </div>
+      <div id="word-bank-list" class="word-list-table">
+        <!-- Word rows populated by JS -->
+      </div>
+    </section>
+
+    <!-- SCREEN 5: ACTIVE LESSON (Overlay / Fullscreen) -->
+    <div id="lesson-viewport" style="display:none; position:fixed; inset:0; background:var(--bg-color); z-index:80; flex-direction:column; overflow-y:auto; padding:calc(var(--safe-top) + 12px) 16px 30px 16px;">
+      <div class="lesson-top-bar" style="max-width:580px; margin:0 auto; width:100%;">
+        <button class="lesson-close-btn" id="exit-lesson-btn" aria-label="Exit Lesson">✕</button>
+        <div class="progress-track">
+          <div class="progress-fill" id="lesson-progress-fill"></div>
+        </div>
+        <div class="lesson-hearts">
+          <span>❤️</span><span id="lesson-hearts-val">3</span>
+        </div>
+      </div>
+
+      <div class="step-container" id="lesson-step-container" style="max-width:580px; margin:0 auto;">
+        <!-- Injected step views (Introduce, MCQ, Article, Cloze, Typing) -->
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Navigation Bar -->
+  <nav id="bottom-nav">
+    <div class="nav-item active" data-target="learn-screen">
+      <div class="nav-icon">🗺️</div>
+      <div class="nav-label">Learn</div>
+    </div>
+    <div class="nav-item" data-target="notebook-screen">
+      <div class="nav-icon">📓</div>
+      <div class="nav-label">Mistakes</div>
+      <div class="nav-badge" id="notebook-badge" style="display:none;">0</div>
+    </div>
+    <div class="nav-item" data-target="sprint-screen">
+      <div class="nav-icon">⚡</div>
+      <div class="nav-label">Sprint</div>
+    </div>
+    <div class="nav-item" data-target="stats-screen">
+      <div class="nav-icon">📊</div>
+      <div class="nav-label">Stats</div>
+    </div>
+  </nav>
+
+  <!-- Unit Modal (Lesson Selector & Boss Quiz) -->
+  <div class="modal-backdrop" id="unit-modal">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title" id="unit-modal-title">Unit 1</div>
+          <div style="font-size:0.8rem; color:var(--text-muted);" id="unit-modal-subtitle">Words 1 – 25</div>
+        </div>
+        <button class="icon-btn" id="close-unit-modal-btn">✕</button>
+      </div>
+      <div class="modal-body" id="unit-modal-lessons-list">
+        <!-- Lessons 1 to 5 and Boss Quiz injected here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Feedback Bottom Drawer -->
+  <div class="feedback-drawer" id="feedback-drawer">
+    <div class="feedback-title" id="feedback-title">Correct!</div>
+    <div class="feedback-desc" id="feedback-desc">Well done.</div>
+    <button class="btn-primary" id="feedback-continue-btn">Continue</button>
+  </div>
+
+  <!-- Confetti Canvas -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <script>
+    /* =====================================================================
+       LEVELS DATA CONFIGURATION (EXTENSIBLE ARCHITECTURE)
+       Adding Level 2, 3... is as simple as: LEVELS[2] = LEVEL_2;
+       ===================================================================== */
+    const LEVEL_1 = [
+  {
+    "id": 1,
+    "german": "ab",
+    "article": null,
+    "plural": "",
+    "pos": "prep",
+    "meaning_en": "from, starting from, off",
+    "meaning_hi": "से / शुरू होकर",
+    "example_de": "Die Fahrt kostet ab Hamburg 200 Euro.",
+    "example_en": "The trip costs 200 euros starting from Hamburg.",
+    "emoji": "🛫",
+    "rule": null,
+    "ruleNote": "Preposition with Dative indicating starting point in space or time.",
+    "exception": null
+  },
+  {
+    "id": 2,
+    "german": "abbiegen",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to turn, take a turn",
+    "meaning_hi": "मुड़ना",
+    "example_de": "An der nächsten Kreuzung müssen Sie links abbiegen.",
+    "example_en": "At the next intersection you must turn left.",
+    "emoji": "↪️",
+    "rule": null,
+    "ruleNote": "Separable verb: biegt ab, bog ab, ist abgebogen.",
+    "exception": null
+  },
+  {
+    "id": 3,
+    "german": "Abbildung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "meaning_en": "illustration, figure, image",
+    "meaning_hi": "चित्र / आकृति",
+    "example_de": "Auf der Abbildung sehen Sie, wie man das Gerät einschaltet.",
+    "example_en": "On the illustration you can see how to switch on the device.",
+    "emoji": "🖼️",
+    "rule": "-ung",
+    "ruleNote": "Nouns ending in -ung are 100% feminine (die) and form plural with -en.",
+    "exception": null
+  },
+  {
+    "id": 4,
+    "german": "Abenteuer",
+    "article": "das",
+    "plural": "-",
+    "pos": "noun",
+    "meaning_en": "adventure",
+    "meaning_hi": "रोमांच / साहसिक कार्य",
+    "example_de": "Unser Urlaub war ein tolles Abenteuer.",
+    "example_en": "Our vacation was a great adventure.",
+    "emoji": "🏕️",
+    "rule": "-er",
+    "ruleNote": "Abstract noun ending in -er from Old French 'aventure'.",
+    "exception": "Exception: Ends in -er but is neuter (das Abenteuer), unlike masculine agent nouns."
+  },
+  {
+    "id": 5,
+    "german": "aber",
+    "article": null,
+    "plural": "",
+    "pos": "conj",
+    "meaning_en": "but, however",
+    "meaning_hi": "लेकिन / पर",
+    "example_de": "Heute kann ich nicht, aber morgen ganz bestimmt.",
+    "example_en": "Today I cannot, but tomorrow for sure.",
+    "emoji": "⚖️",
+    "rule": null,
+    "ruleNote": "Coordinating conjunction (ADUSO, Position 0).",
+    "exception": null
+  },
+  {
+    "id": 6,
+    "german": "abfahren",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to depart, leave",
+    "meaning_hi": "रवाना होना / छूटना",
+    "example_de": "Unser Zug ist pünktlich abgefahren.",
+    "example_en": "Our train departed on time.",
+    "emoji": "🚆",
+    "rule": null,
+    "ruleNote": "Strong separable verb: fährt ab, fuhr ab, ist abgefahren (takes sein).",
+    "exception": null
+  },
+  {
+    "id": 7,
+    "german": "Abfahrt",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "meaning_en": "departure",
+    "meaning_hi": "प्रस्थान / रवानगी",
+    "example_de": "Es bleiben uns noch zwanzig Minuten bis zur Abfahrt.",
+    "example_en": "We have twenty minutes left until departure.",
+    "emoji": "⏱️",
+    "rule": "-t",
+    "ruleNote": "Verbal abstract noun with suffix -t from abfahren is feminine.",
+    "exception": null
+  },
+  {
+    "id": 8,
+    "german": "Abfall",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "meaning_en": "rubbish, waste, garbage",
+    "meaning_hi": "कचरा / अपशिष्ट",
+    "example_de": "Werfen Sie den Bioabfall bitte nicht zum normalen Müll.",
+    "example_en": "Please do not throw organic waste into normal trash.",
+    "emoji": "🗑️",
+    "rule": "verb stem",
+    "ruleNote": "Nouns formed from verb stems without suffix (abfallen -> der Abfall) are typically masculine.",
+    "exception": null
+  },
+  {
+    "id": 9,
+    "german": "Abfalleimer",
+    "article": "der",
+    "plural": "-",
+    "pos": "noun",
+    "meaning_en": "waste bin, trash can",
+    "meaning_hi": "कूड़ेदान",
+    "example_de": "Wirf das bitte in den Abfalleimer!",
+    "example_en": "Please throw that into the trash can!",
+    "emoji": "🚮",
+    "rule": "-er",
+    "ruleNote": "Compound with der Eimer. Implements and containers in -er are mostly masculine.",
+    "exception": null
+  },
+  {
+    "id": 10,
+    "german": "Abgase",
+    "article": "die",
+    "plural": "Pl.",
+    "pos": "noun",
+    "meaning_en": "exhaust fumes, emissions",
+    "meaning_hi": "निकास गैस / उत्सर्जन",
+    "example_de": "Abgase aus Industrie und Haushalten verschmutzen die Luft.",
+    "example_en": "Exhaust gases from industry and households pollute the air.",
+    "emoji": "🏭",
+    "rule": "plural",
+    "ruleNote": "Plural noun: die Abgase (singular: das Abgas).",
+    "exception": null
+  },
+  {
+    "id": 11,
+    "german": "abgeben",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to hand in, submit, deliver",
+    "meaning_hi": "जमा करना / सौंपना",
+    "example_de": "Ich soll dieses Päckchen bei Herrn Müller abgeben.",
+    "example_en": "I am supposed to hand this parcel to Mr. Müller.",
+    "emoji": "📦",
+    "rule": null,
+    "ruleNote": "Separable strong verb: gibt ab, gab ab, hat abgegeben.",
+    "exception": null
+  },
+  {
+    "id": 12,
+    "german": "abhängen",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to depend (on)",
+    "meaning_hi": "निर्भर होना",
+    "example_de": "Vielleicht bleiben wir ein paar Tage länger, das hängt vom Wetter ab.",
+    "example_en": "Maybe we will stay a few days longer, that depends on the weather.",
+    "emoji": "🔗",
+    "rule": null,
+    "ruleNote": "Fixed preposition: abhängen von + Dativ.",
+    "exception": null
+  },
+  {
+    "id": 13,
+    "german": "abhängig",
+    "article": null,
+    "plural": "",
+    "pos": "adj",
+    "meaning_en": "dependent",
+    "meaning_hi": "निर्भर / आश्रित",
+    "example_de": "Gregor ist finanziell von seinen Eltern abhängig.",
+    "example_en": "Gregor is financially dependent on his parents.",
+    "emoji": "🐣",
+    "rule": "-ig",
+    "ruleNote": "Suffix -ig forms adjectives from verbs or nouns (abhängen -> abhängig).",
+    "exception": null
+  },
+  {
+    "id": 14,
+    "german": "abheben",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to withdraw money, lift off",
+    "meaning_hi": "पैसे निकालना / उठाना",
+    "example_de": "Für die Reise habe ich 500 Euro von meinem Konto abgehoben.",
+    "example_en": "For the trip I withdrew 500 euros from my account.",
+    "emoji": "🏧",
+    "rule": null,
+    "ruleNote": "Separable verb: hebt ab, hob ab, hat abgehoben. Commonly Geld abheben.",
+    "exception": null
+  },
+  {
+    "id": 15,
+    "german": "abholen",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to pick up, collect",
+    "meaning_hi": "लेने जाना / पिक करना",
+    "example_de": "Meine Freundin hat mich vom Bahnhof abgeholt.",
+    "example_en": "My girlfriend picked me up from the train station.",
+    "emoji": "🚗",
+    "rule": null,
+    "ruleNote": "Separable regular verb: holt ab, holte ab, hat abgeholt.",
+    "exception": null
+  },
+  {
+    "id": 16,
+    "german": "abschreiben",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to copy, cheat by copying",
+    "meaning_hi": "नकल करना",
+    "example_de": "Er hat die Hausaufgaben von mir abgeschrieben.",
+    "example_en": "He copied the homework from me.",
+    "emoji": "📝",
+    "rule": null,
+    "ruleNote": "Strong verb: schreibt ab, schrieb ab, hat abgeschrieben (abschreiben von + Dativ).",
+    "exception": null
+  },
+  {
+    "id": 17,
+    "german": "Abitur",
+    "article": "das",
+    "plural": "-",
+    "pos": "noun",
+    "meaning_en": "secondary school diploma / A-levels",
+    "meaning_hi": "उच्च विद्यालय परीक्षा / 12वीं डिप्लोमा",
+    "example_de": "Meine Tochter hat gerade Abitur gemacht.",
+    "example_en": "My daughter has just passed her high school diploma.",
+    "emoji": "🎓",
+    "rule": "-ur",
+    "ruleNote": "Shortened from Latin 'Abiturium' (neuter). In Austria/Switzerland: die Matura.",
+    "exception": "Exception: Ends in -ur but is neuter (das Abitur) from Latin neuter, whereas German -ur is usually feminine (die Natur, die Kultur)."
+  },
+  {
+    "id": 18,
+    "german": "ablehnen",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to decline, reject, turn down",
+    "meaning_hi": "अस्वीकार करना / मना करना",
+    "example_de": "Er hat mein Angebot, ihm zu helfen, abgelehnt.",
+    "example_en": "He turned down my offer to help him.",
+    "emoji": "🙅",
+    "rule": null,
+    "ruleNote": "Regular separable verb: lehnt ab, lehnte ab, hat abgelehnt. Opposite: annehmen.",
+    "exception": null
+  },
+  {
+    "id": 19,
+    "german": "abmachen",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to agree upon, arrange",
+    "meaning_hi": "तय करना / समझौता करना",
+    "example_de": "Wir hatten doch abgemacht, dass du die Getränke besorgst.",
+    "example_en": "We had agreed that you would get the drinks.",
+    "emoji": "🤝",
+    "rule": null,
+    "ruleNote": "Separable verb: macht ab, machte ab, hat abgemacht. Used for mutual agreements.",
+    "exception": null
+  },
+  {
+    "id": 20,
+    "german": "abnehmen",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to lose weight, take off, decrease",
+    "meaning_hi": "वजन कम करना / घटाना",
+    "example_de": "Ich habe zehn Kilo abgenommen.",
+    "example_en": "I have lost ten kilos.",
+    "emoji": "📉",
+    "rule": null,
+    "ruleNote": "Strong separable verb: nimmt ab, nahm ab, hat abgenommen. Opposite: zunehmen.",
+    "exception": null
+  },
+  {
+    "id": 21,
+    "german": "abonnieren",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to subscribe to",
+    "meaning_hi": "सदस्यता लेना",
+    "example_de": "Diese Zeitschrift würde ich gerne abonnieren.",
+    "example_en": "I would like to subscribe to this magazine.",
+    "emoji": "📬",
+    "rule": "-ieren",
+    "ruleNote": "Verbs in -ieren take no 'ge-' in Partizip II (hat abonniert).",
+    "exception": null
+  },
+  {
+    "id": 22,
+    "german": "Abonnement",
+    "article": "das",
+    "plural": "-s",
+    "pos": "noun",
+    "meaning_en": "subscription",
+    "meaning_hi": "सदस्यता",
+    "example_de": "Ich habe das Abonnement gekündigt.",
+    "example_en": "I canceled the subscription.",
+    "emoji": "🗞️",
+    "rule": "-ment",
+    "ruleNote": "Nouns of French origin ending in -ment are neuter (das).",
+    "exception": null
+  },
+  {
+    "id": 23,
+    "german": "absagen",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to cancel, call off",
+    "meaning_hi": "रद्द करना",
+    "example_de": "Ich muss unser Treffen leider absagen, weil ich krank geworden bin.",
+    "example_en": "Unfortunately I have to cancel our meeting because I fell ill.",
+    "emoji": "❌",
+    "rule": null,
+    "ruleNote": "Separable verb: sagt ab, sagte ab, hat abgesagt. Opposite: zusagen.",
+    "exception": null
+  },
+  {
+    "id": 24,
+    "german": "Abschluss",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "meaning_en": "graduation, qualification, degree",
+    "meaning_hi": "समापन / डिग्री / योग्यता",
+    "example_de": "Ein guter Schulabschluss ist sehr wichtig.",
+    "example_en": "A good school leaving qualification is very important.",
+    "emoji": "📜",
+    "rule": "verb stem",
+    "ruleNote": "Masculine noun derived from verb root abschließen.",
+    "exception": null
+  },
+  {
+    "id": 25,
+    "german": "Abschnitt",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "meaning_en": "section, paragraph, portion",
+    "meaning_hi": "अनुभाग / खंड / पैराग्राफ",
+    "example_de": "Lesen Sie bitte den zweiten Abschnitt.",
+    "example_en": "Please read the second section.",
+    "emoji": "📑",
+    "rule": "verb stem",
+    "ruleNote": "Masculine noun derived from verbal stem abschneiden.",
+    "exception": null
+  },
+  {
+    "id": 26,
+    "german": "Absender",
+    "article": "der",
+    "plural": "-",
+    "pos": "noun",
+    "meaning_en": "sender, return address",
+    "meaning_hi": "प्रेषक / भेजने वाला",
+    "example_de": "Schicken Sie das Paket an den Absender zurück.",
+    "example_en": "Return the package to the sender.",
+    "emoji": "📮",
+    "rule": "-er",
+    "ruleNote": "Nouns ending in -er indicating the agent/person doing an action are masculine (der).",
+    "exception": null
+  },
+  {
+    "id": 27,
+    "german": "Absicht",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "meaning_en": "intention, purpose",
+    "meaning_hi": "इरादा / नीयत",
+    "example_de": "Meine Tochter hat das nicht mit Absicht gemacht.",
+    "example_en": "My daughter didn't do that on purpose.",
+    "emoji": "🎯",
+    "rule": "-t",
+    "ruleNote": "Verbal abstract noun with suffix -t (absehen -> die Absicht) is feminine.",
+    "exception": null
+  },
+  {
+    "id": 28,
+    "german": "absolut",
+    "article": null,
+    "plural": "",
+    "pos": "adj",
+    "meaning_en": "absolute, completely",
+    "meaning_hi": "बिल्कुल / पूर्ण",
+    "example_de": "Was Sie da sagen, ist absolut falsch.",
+    "example_en": "What you are saying there is absolutely wrong.",
+    "emoji": "💯",
+    "rule": null,
+    "ruleNote": "Adverb/adjective used for emphatic intensification.",
+    "exception": null
+  },
+  {
+    "id": 29,
+    "german": "abstimmen",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to vote, coordinate",
+    "meaning_hi": "मतदान करना / वोट डालना",
+    "example_de": "Lasst uns über diesen Punkt abstimmen.",
+    "example_en": "Let us vote on this point.",
+    "emoji": "🗳️",
+    "rule": null,
+    "ruleNote": "Separable verb: stimmt ab, stimmte ab, hat abgestimmt (abstimmen über + Akk).",
+    "exception": null
+  },
+  {
+    "id": 30,
+    "german": "Abteilung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "meaning_en": "department, division",
+    "meaning_hi": "विभाग / सेक्शन",
+    "example_de": "Meine Freundin arbeitet in der Abteilung von Frau Kaufmann.",
+    "example_en": "My girlfriend works in Ms. Kaufmann's department.",
+    "emoji": "🏢",
+    "rule": "-ung",
+    "ruleNote": "Suffix -ung is 100% feminine (die) and forms plural with -en.",
+    "exception": null
+  },
+  {
+    "id": 31,
+    "german": "Abwart",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "meaning_en": "caretaker, building superintendent (Swiss)",
+    "meaning_hi": "चौकीदार / रखवाला",
+    "example_de": "Der Abwart hat mir geholfen, den Schrank in die Wohnung zu tragen.",
+    "example_en": "The caretaker helped me carry the cupboard into the apartment.",
+    "emoji": "🔑",
+    "rule": "person",
+    "ruleNote": "Male person/occupation: always masculine (der). In D/A: der Hausmeister.",
+    "exception": null
+  },
+  {
+    "id": 32,
+    "german": "abwärts",
+    "article": null,
+    "plural": "",
+    "pos": "adv",
+    "meaning_en": "downwards, down the hill",
+    "meaning_hi": "नीचे की ओर",
+    "example_de": "Von dort führt der Weg abwärts ins Tal.",
+    "example_en": "From there the path leads downwards into the valley.",
+    "emoji": "📉",
+    "rule": "-wärts",
+    "ruleNote": "Directional suffix -wärts denotes spatial or temporal movement.",
+    "exception": null
+  },
+  {
+    "id": 33,
+    "german": "abwaschen",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to do the dishes, wash up",
+    "meaning_hi": "बर्तन धोना",
+    "example_de": "Ich muss noch das Geschirr abwaschen.",
+    "example_en": "I still have to wash the dishes.",
+    "emoji": "🧼",
+    "rule": null,
+    "ruleNote": "Strong separable verb: wäscht ab, wusch ab, hat abgewaschen.",
+    "exception": null
+  },
+  {
+    "id": 34,
+    "german": "abwesend",
+    "article": null,
+    "plural": "",
+    "pos": "adj",
+    "meaning_en": "absent, away",
+    "meaning_hi": "अनुपस्थित",
+    "example_de": "Herr Huber ist bis zum 25. April abwesend.",
+    "example_en": "Mr. Huber is absent until April 25th.",
+    "emoji": "🚫",
+    "rule": "-end",
+    "ruleNote": "Participle adjective (abwesen -> abwesend). Opposite: anwesend.",
+    "exception": null
+  },
+  {
+    "id": 35,
+    "german": "achten",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to pay attention (to), watch out",
+    "meaning_hi": "ध्यान देना",
+    "example_de": "Achten Sie bitte darauf, dass Sie abschließen, wenn Sie gehen.",
+    "example_en": "Please pay attention to locking up when you leave.",
+    "emoji": "👀",
+    "rule": null,
+    "ruleNote": "Verb with fixed preposition: achten auf + Akkusativ.",
+    "exception": null
+  },
+  {
+    "id": 36,
+    "german": "Achtung",
+    "article": "die",
+    "plural": "",
+    "pos": "noun",
+    "meaning_en": "Attention! / Caution! / Respect",
+    "meaning_hi": "सावधानी / ध्यान रहे!",
+    "example_de": "Achtung, hier endet die Straße!",
+    "example_en": "Attention, the street ends here!",
+    "emoji": "⚠️",
+    "rule": "-ung",
+    "ruleNote": "Nouns ending in -ung are 100% feminine (die).",
+    "exception": null
+  },
+  {
+    "id": 37,
+    "german": "Adresse",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "meaning_en": "address",
+    "meaning_hi": "पता",
+    "example_de": "Hast du schon meine neue Adresse?",
+    "example_en": "Do you already have my new address?",
+    "emoji": "📍",
+    "rule": "-e",
+    "ruleNote": "Nouns ending in -e from French/Latin are overwhelmingly feminine (die).",
+    "exception": null
+  },
+  {
+    "id": 38,
+    "german": "ähnlich",
+    "article": null,
+    "plural": "",
+    "pos": "adj",
+    "meaning_en": "similar, resembling",
+    "meaning_hi": "समान / मिलता-जुलता",
+    "example_de": "Emilia ist in einer ganz ähnlichen Situation wie ich.",
+    "example_en": "Emilia is in a very similar situation to me.",
+    "emoji": "👥",
+    "rule": "-lich",
+    "ruleNote": "Suffix -lich creates adjectives of likeness. Takes Dative: jemandem ähnlich sehen.",
+    "exception": null
+  },
+  {
+    "id": 39,
+    "german": "Ahnung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "meaning_en": "clue, idea, inkling",
+    "meaning_hi": "अंदाज़ा / खबर",
+    "example_de": "Ich hatte keine Ahnung, dass du heute Geburtstag hast.",
+    "example_en": "I had no idea that today is your birthday.",
+    "emoji": "💡",
+    "rule": "-ung",
+    "ruleNote": "Nouns ending in -ung are 100% feminine (die). Common phrase: keine Ahnung haben.",
+    "exception": null
+  },
+  {
+    "id": 40,
+    "german": "Aktion",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "meaning_en": "campaign, special offer, action",
+    "meaning_hi": "अभियान / कार्रवाई",
+    "example_de": "Die Stadt sollte eine Aktion für Familien planen.",
+    "example_en": "The city should plan a campaign for families.",
+    "emoji": "📢",
+    "rule": "-ion",
+    "ruleNote": "Nouns ending in -ion / -tion are 100% feminine (die) and form plural with -en.",
+    "exception": null
+  },
+  {
+    "id": 41,
+    "german": "aktiv",
+    "article": null,
+    "plural": "",
+    "pos": "adj",
+    "meaning_en": "active, energetic",
+    "meaning_hi": "सक्रिय",
+    "example_de": "Ich bin sehr aktiv und mache viel Sport.",
+    "example_en": "I am very active and do a lot of sports.",
+    "emoji": "🏃",
+    "rule": "-iv",
+    "ruleNote": "Adjective ending in -iv borrowed from Latin.",
+    "exception": null
+  },
+  {
+    "id": 42,
+    "german": "Aktivität",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "meaning_en": "activity",
+    "meaning_hi": "गतिविधि",
+    "example_de": "In den Ferien bietet die Stadt verschiedene Freizeitaktivitäten.",
+    "example_en": "During holidays the city offers various leisure activities.",
+    "emoji": "🎯",
+    "rule": "-tät",
+    "ruleNote": "Nouns ending in -tät are 100% feminine (die) and form plural with -en.",
+    "exception": null
+  },
+  {
+    "id": 43,
+    "german": "aktuell",
+    "article": null,
+    "plural": "",
+    "pos": "adj",
+    "meaning_en": "current, up-to-date, topical",
+    "meaning_hi": "वर्तमान / ताज़ा / समसामयिक",
+    "example_de": "Umweltschutz ist ein aktuelles Thema.",
+    "example_en": "Environmental protection is a topical issue.",
+    "emoji": "📰",
+    "rule": null,
+    "ruleNote": "Adjective. False friend alert: 'aktuell' means 'current/now', NOT 'actual'!",
+    "exception": null
+  },
+  {
+    "id": 44,
+    "german": "akzeptieren",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to accept, agree to",
+    "meaning_hi": "स्वीकार करना",
+    "example_de": "Ich kann diese Bedingungen nicht akzeptieren.",
+    "example_en": "I cannot accept these conditions.",
+    "emoji": "✅",
+    "rule": "-ieren",
+    "ruleNote": "Verb in -ieren: regular weak verb (hat akzeptiert).",
+    "exception": null
+  },
+  {
+    "id": 45,
+    "german": "Alarm",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "meaning_en": "alarm, alert",
+    "meaning_hi": "अलार्म / चेतावनी",
+    "example_de": "Bei Feueralarm dürfen Sie die Aufzüge nicht benutzen.",
+    "example_en": "In case of fire alarm you must not use the elevators.",
+    "emoji": "🚨",
+    "rule": "masc loan",
+    "ruleNote": "Masculine noun borrowed from Italian 'all'arme'. Plural: die Alarme.",
+    "exception": null
+  },
+  {
+    "id": 46,
+    "german": "Alkohol",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "meaning_en": "alcohol",
+    "meaning_hi": "शराब / अल्कोहल",
+    "example_de": "Du musst die Wunde mit Alkohol reinigen.",
+    "example_en": "You must clean the wound with alcohol.",
+    "emoji": "🍷",
+    "rule": "-ol",
+    "ruleNote": "Chemical substances and drinks in -ol are masculine (der Alkohol).",
+    "exception": null
+  },
+  {
+    "id": 47,
+    "german": "all-",
+    "article": null,
+    "plural": "",
+    "pos": "pron",
+    "meaning_en": "all, everything",
+    "meaning_hi": "सब / सभी",
+    "example_de": "Sind alle Kinder da?",
+    "example_en": "Are all the children here?",
+    "emoji": "🌐",
+    "rule": null,
+    "ruleNote": "Indefinite pronoun / determiner: alle Kinder, alles Gute.",
+    "exception": null
+  },
+  {
+    "id": 48,
+    "german": "allein",
+    "article": null,
+    "plural": "",
+    "pos": "adj",
+    "meaning_en": "alone, by oneself, solely",
+    "meaning_hi": "अकेले / केवल",
+    "example_de": "Ich gehe nicht gern allein spazieren.",
+    "example_en": "I do not like going for a walk alone.",
+    "emoji": "🧍",
+    "rule": null,
+    "ruleNote": "Uninflected adjective / adverb.",
+    "exception": null
+  },
+  {
+    "id": 49,
+    "german": "aller-",
+    "article": null,
+    "plural": "",
+    "pos": "adv",
+    "meaning_en": "of all, absolute (superlative prefix)",
+    "meaning_hi": "सबसे / सर्वोत्तम",
+    "example_de": "Das ist das Allerschönste, was ich je gesehen habe.",
+    "example_en": "That is the most beautiful thing of all that I have ever seen.",
+    "emoji": "🌟",
+    "rule": null,
+    "ruleNote": "Prefix intensifying superlatives: am allerbesten, die Allerschönste.",
+    "exception": null
+  },
+  {
+    "id": 50,
+    "german": "allerdings",
+    "article": null,
+    "plural": "",
+    "pos": "adv",
+    "meaning_en": "however, though, certainly",
+    "meaning_hi": "हालाँकि / बेशक",
+    "example_de": "Wir können uns morgen treffen, allerdings habe ich erst ab Mittag Zeit.",
+    "example_en": "We can meet tomorrow, however I only have time from noon.",
+    "emoji": "☝️",
+    "rule": null,
+    "ruleNote": "Adverb used to restrict or concede a statement.",
+    "exception": null
+  },
+  {
+    "id": 51,
+    "german": "allgemein",
+    "article": null,
+    "plural": "",
+    "pos": "adj",
+    "meaning_en": "general, common, universal",
+    "meaning_hi": "सामान्य / सार्वभौमिक",
+    "example_de": "Wir haben nur über allgemeine Probleme gesprochen.",
+    "example_en": "We only spoke about general problems.",
+    "emoji": "🌍",
+    "rule": null,
+    "ruleNote": "Phrase: im Allgemeinen = in general.",
+    "exception": null
+  },
+  {
+    "id": 52,
+    "german": "Alltag",
+    "article": "der",
+    "plural": "",
+    "pos": "noun",
+    "meaning_en": "everyday life, daily routine",
+    "meaning_hi": "दैनिक जीवन / रोज़मर्रा",
+    "example_de": "Das ist mein Alltag: putzen, waschen, kochen.",
+    "example_en": "That is my daily routine: cleaning, washing, cooking.",
+    "emoji": "🗓️",
+    "rule": "compound",
+    "ruleNote": "Compound with der Tag. Days and compounds ending in -tag are masculine (der).",
+    "exception": null
+  },
+  {
+    "id": 53,
+    "german": "alltäglich",
+    "article": null,
+    "plural": "",
+    "pos": "adj",
+    "meaning_en": "everyday, ordinary, routine",
+    "meaning_hi": "दैनिक / साधारण",
+    "example_de": "Das alltägliche Leben ist manchmal langweilig.",
+    "example_en": "Everyday life is sometimes boring.",
+    "emoji": "☕",
+    "rule": "-lich",
+    "ruleNote": "Adjective derived from Alltag + -lich.",
+    "exception": null
+  },
+  {
+    "id": 54,
+    "german": "Alphabet",
+    "article": "das",
+    "plural": "-e",
+    "pos": "noun",
+    "meaning_en": "alphabet",
+    "meaning_hi": "वर्णमाला",
+    "example_de": "Wie viele Buchstaben hat das Alphabet in Ihrer Sprache?",
+    "example_en": "How many letters does the alphabet have in your language?",
+    "emoji": "🔤",
+    "rule": "greek loan",
+    "ruleNote": "Greek neuter loanword (alpha + beta). Plural: die Alphabete.",
+    "exception": null
+  },
+  {
+    "id": 55,
+    "german": "als",
+    "article": null,
+    "plural": "",
+    "pos": "conj",
+    "meaning_en": "when (past single event), than (comparative), as",
+    "meaning_hi": "जब / से (तुलना) / के रूप में",
+    "example_de": "Als mein Mann kam, war die Party schon zu Ende.",
+    "example_en": "When my husband arrived, the party was already over.",
+    "emoji": "⏳",
+    "rule": null,
+    "ruleNote": "Subordinating conjunction for past single event (verb at end), or comparative particle (größer als).",
+    "exception": null
+  },
+  {
+    "id": 56,
+    "german": "als ob",
+    "article": null,
+    "plural": "",
+    "pos": "conj",
+    "meaning_en": "as if, as though",
+    "meaning_hi": "मानो / जैसे कि",
+    "example_de": "Er tut so, als ob wir nie darüber gesprochen hätten.",
+    "example_en": "He acts as if we had never spoken about it.",
+    "emoji": "🎭",
+    "rule": null,
+    "ruleNote": "Subordinating conjunction triggering subjunctive (Konjunktiv II) and verb-final order.",
+    "exception": null
+  },
+  {
+    "id": 57,
+    "german": "also",
+    "article": null,
+    "plural": "",
+    "pos": "adv",
+    "meaning_en": "so, therefore, that is to say",
+    "meaning_hi": "तो / इसलिए",
+    "example_de": "Irina hat Urlaub. Sie kann uns also helfen.",
+    "example_en": "Irina is on vacation. So she can help us.",
+    "emoji": "👉",
+    "rule": null,
+    "ruleNote": "Connector meaning 'thus / so'. False friend: does NOT mean 'also' (which is 'auch')!",
+    "exception": null
+  },
+  {
+    "id": 58,
+    "german": "alt",
+    "article": null,
+    "plural": "",
+    "pos": "adj",
+    "meaning_en": "old, aged",
+    "meaning_hi": "बूढ़ा / पुराना",
+    "example_de": "Maria ist eine alte Freundin von mir.",
+    "example_en": "Maria is an old friend of mine.",
+    "emoji": "👵",
+    "rule": null,
+    "ruleNote": "Comparative: älter, superlative: am ältesten (takes umlaut).",
+    "exception": null
+  },
+  {
+    "id": 59,
+    "german": "Alter",
+    "article": "das",
+    "plural": "",
+    "pos": "noun",
+    "meaning_en": "age, old age",
+    "meaning_hi": "उम्र / आयु",
+    "example_de": "Wir sind etwa im gleichen Alter.",
+    "example_en": "We are roughly the same age.",
+    "emoji": "🎂",
+    "rule": "-er",
+    "ruleNote": "Nominalised state/quality ending in -er is neuter (das Alter).",
+    "exception": "Exception: Ends in -er but is neuter (das Alter), not masculine."
+  },
+  {
+    "id": 60,
+    "german": "Altenheim",
+    "article": "das",
+    "plural": "-e",
+    "pos": "noun",
+    "meaning_en": "nursing home, retirement home",
+    "meaning_hi": "वृद्धाश्रम",
+    "example_de": "Die Großeltern unserer Nachbarn sind im Altenheim.",
+    "example_en": "Our neighbors' grandparents are in a retirement home.",
+    "emoji": "🏡",
+    "rule": "compound",
+    "ruleNote": "Compound with das Heim. Compounds take the gender of the last word.",
+    "exception": null
+  },
+  {
+    "id": 61,
+    "german": "alternativ",
+    "article": null,
+    "plural": "",
+    "pos": "adj",
+    "meaning_en": "alternative",
+    "meaning_hi": "वैकल्पिक",
+    "example_de": "Wir brauchen alternative Energien.",
+    "example_en": "We need alternative energy sources.",
+    "emoji": "🌱",
+    "rule": "-iv",
+    "ruleNote": "Adjective ending in -iv from Latin.",
+    "exception": null
+  },
+  {
+    "id": 62,
+    "german": "Alternative",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "meaning_en": "alternative, option",
+    "meaning_hi": "विकल्प",
+    "example_de": "Auf dieser Strecke ist der Zug eine gute Alternative zum Flugzeug.",
+    "example_en": "On this route the train is a good alternative to the airplane.",
+    "emoji": "🔀",
+    "rule": "-e",
+    "ruleNote": "Foreign feminine nouns ending in -e are feminine (die).",
+    "exception": null
+  },
+  {
+    "id": 63,
+    "german": "Ampel",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "meaning_en": "traffic light",
+    "meaning_hi": "ट्रैफ़िक लाइट",
+    "example_de": "Dort an der Ampel kannst du über die Straße gehen.",
+    "example_en": "There at the traffic light you can cross the street.",
+    "emoji": "🚦",
+    "rule": "-el",
+    "ruleNote": "Feminine noun in -el (from Latin ampulla). Plural: die Ampeln.",
+    "exception": null
+  },
+  {
+    "id": 64,
+    "german": "Amt",
+    "article": "das",
+    "plural": "¨-er",
+    "pos": "noun",
+    "meaning_en": "office, government agency, bureau",
+    "meaning_hi": "कार्यालय / सरकारी दफ़्तर",
+    "example_de": "Das Arbeitsamt befindet sich neben dem Busbahnhof.",
+    "example_en": "The employment office is located next to the bus station.",
+    "emoji": "🏛️",
+    "rule": "root noun",
+    "ruleNote": "Short monosyllabic neuter noun. Plural takes umlaut + -er (die Ämter).",
+    "exception": null
+  },
+  {
+    "id": 65,
+    "german": "amüsieren",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to enjoy oneself, have fun",
+    "meaning_hi": "मज़े करना / आनंद लेना",
+    "example_de": "Bei dem Fest haben wir uns sehr gut amüsiert.",
+    "example_en": "At the party we enjoyed ourselves very well.",
+    "emoji": "🎉",
+    "rule": "-ieren",
+    "ruleNote": "Reflexive verb: sich amüsieren (amüsiert sich, hat sich amüsiert).",
+    "exception": null
+  },
+  {
+    "id": 66,
+    "german": "an",
+    "article": null,
+    "plural": "",
+    "pos": "prep",
+    "meaning_en": "at, on (vertical surface), to",
+    "meaning_hi": "पर / किनारे / में",
+    "example_de": "Ich warte am Bahnhof auf dich.",
+    "example_en": "I am waiting for you at the train station.",
+    "emoji": "📍",
+    "rule": null,
+    "ruleNote": "Two-way preposition (Wechselpräposition): Dative for location, Accusative for movement.",
+    "exception": null
+  },
+  {
+    "id": 67,
+    "german": "analysieren",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to analyse, examine",
+    "meaning_hi": "विश्लेषण करना",
+    "example_de": "Die Politiker analysieren die Situation auf dem Arbeitsmarkt.",
+    "example_en": "Politicians are analyzing the situation in the labor market.",
+    "emoji": "🔍",
+    "rule": "-ieren",
+    "ruleNote": "Loan verb in -ieren: regular conjugation, hat analysiert.",
+    "exception": null
+  },
+  {
+    "id": 68,
+    "german": "anbieten",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to offer, provide",
+    "meaning_hi": "पेश करना / प्रस्तुत करना",
+    "example_de": "Darf ich Ihnen etwas zu trinken anbieten?",
+    "example_en": "May I offer you something to drink?",
+    "emoji": "☕",
+    "rule": null,
+    "ruleNote": "Separable strong verb: bietet an, bot an, hat angeboten.",
+    "exception": null
+  },
+  {
+    "id": 69,
+    "german": "Anbieter",
+    "article": "der",
+    "plural": "-",
+    "pos": "noun",
+    "meaning_en": "provider, supplier",
+    "meaning_hi": "प्रदाता / सेवा देने वाला",
+    "example_de": "Ist das ein privater Telefonanbieter?",
+    "example_en": "Is that a private telephone provider?",
+    "emoji": "📡",
+    "rule": "-er",
+    "ruleNote": "Agent noun in -er derived from verb anbieten: masculine (der Anbieter).",
+    "exception": null
+  },
+  {
+    "id": 70,
+    "german": "Angebot",
+    "article": "das",
+    "plural": "-e",
+    "pos": "noun",
+    "meaning_en": "offer, special sale, supply",
+    "meaning_hi": "प्रस्ताव / सेल / ऑफर",
+    "example_de": "Der Käse ist heute im Angebot.",
+    "example_en": "The cheese is on special offer today.",
+    "emoji": "🏷️",
+    "rule": "compound/ge-",
+    "ruleNote": "Noun derived from verb prefix/stem (anbieten -> das Angebot) is neuter.",
+    "exception": null
+  },
+  {
+    "id": 71,
+    "german": "ander-",
+    "article": null,
+    "plural": "",
+    "pos": "adj",
+    "meaning_en": "other, different",
+    "meaning_hi": "दूसरा / अन्य",
+    "example_de": "Die anderen sind schon nach Hause gegangen.",
+    "example_en": "The others have already gone home.",
+    "emoji": "👥",
+    "rule": null,
+    "ruleNote": "Indefinite pronoun/adjective declining with case/gender endings.",
+    "exception": null
+  },
+  {
+    "id": 72,
+    "german": "andererseits",
+    "article": null,
+    "plural": "",
+    "pos": "adv",
+    "meaning_en": "on the other hand",
+    "meaning_hi": "दूसरी ओर",
+    "example_de": "Tarek möchte zwar studieren, aber andererseits möchte er auch gleich Geld verdienen.",
+    "example_en": "Tarek would like to study, but on the other hand he also wants to earn money right away.",
+    "emoji": "⚖️",
+    "rule": null,
+    "ruleNote": "Correlative adverb, often paired with einerseits: einerseits ... andererseits.",
+    "exception": null
+  },
+  {
+    "id": 73,
+    "german": "ändern",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to change, alter, modify",
+    "meaning_hi": "बदलना / परिवर्तन करना",
+    "example_de": "Das Wetter hat sich geändert.",
+    "example_en": "The weather has changed.",
+    "emoji": "🔄",
+    "rule": null,
+    "ruleNote": "Often reflexive: sich ändern (ändert, änderte, hat geändert).",
+    "exception": null
+  },
+  {
+    "id": 74,
+    "german": "Änderung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "meaning_en": "change, alteration, amendment",
+    "meaning_hi": "बदलाव / संशोधन",
+    "example_de": "Es gibt eine Programmänderung.",
+    "example_en": "There is a schedule change.",
+    "emoji": "📝",
+    "rule": "-ung",
+    "ruleNote": "Nouns ending in -ung are 100% feminine (die).",
+    "exception": null
+  },
+  {
+    "id": 75,
+    "german": "anders",
+    "article": null,
+    "plural": "",
+    "pos": "adv",
+    "meaning_en": "differently, otherwise",
+    "meaning_hi": "अलग तरीके से",
+    "example_de": "Anders geht das leider nicht.",
+    "example_en": "Unfortunately that cannot be done differently.",
+    "emoji": "🔀",
+    "rule": null,
+    "ruleNote": "Invariable modal adverb.",
+    "exception": null
+  },
+  {
+    "id": 76,
+    "german": "anerkennen",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to recognize, acknowledge, validate",
+    "meaning_hi": "मान्यता देना / स्वीकारना",
+    "example_de": "Meine Ausbildung wird hier nicht anerkannt.",
+    "example_en": "My vocational training is not recognized here.",
+    "emoji": "🏅",
+    "rule": null,
+    "ruleNote": "Mixed separable verb: erkennt an, erkannte an, hat anerkannt.",
+    "exception": null
+  },
+  {
+    "id": 77,
+    "german": "anfangen",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to begin, start",
+    "meaning_hi": "शुरू करना / आरंभ होना",
+    "example_de": "Wann fängst du mit der Arbeit an?",
+    "example_en": "When do you start work?",
+    "emoji": "🏁",
+    "rule": null,
+    "ruleNote": "Strong separable verb: fängt an, fing an, hat angefangen (anfangen mit + Dativ).",
+    "exception": null
+  },
+  {
+    "id": 78,
+    "german": "Anfang",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "meaning_en": "beginning, start",
+    "meaning_hi": "शुरुआत / प्रारंभ",
+    "example_de": "Am Anfang habe ich bei der Arbeit viele Fragen gestellt.",
+    "example_en": "At the beginning I asked many questions at work.",
+    "emoji": "🌅",
+    "rule": "verb stem",
+    "ruleNote": "Masculine noun derived from verb stem (anfangen -> der Anfang).",
+    "exception": null
+  },
+  {
+    "id": 79,
+    "german": "anfangs",
+    "article": null,
+    "plural": "",
+    "pos": "adv",
+    "meaning_en": "initially, at first",
+    "meaning_hi": "शुरू में / प्रारंभ में",
+    "example_de": "Anfangs ging alles gut.",
+    "example_en": "Initially everything went well.",
+    "emoji": "🌱",
+    "rule": "-s",
+    "ruleNote": "Genitive temporal adverb suffix -s (from Anfang).",
+    "exception": null
+  },
+  {
+    "id": 80,
+    "german": "angeben",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to state, indicate, specify",
+    "meaning_hi": "बताना / उल्लेख करना",
+    "example_de": "Bitte geben Sie Ihre genaue Adresse an.",
+    "example_en": "Please state your exact address.",
+    "emoji": "📋",
+    "rule": null,
+    "ruleNote": "Separable strong verb: gibt an, gab an, hat angegeben.",
+    "exception": null
+  },
+  {
+    "id": 81,
+    "german": "Angabe",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "meaning_en": "detail, information, statement",
+    "meaning_hi": "विवरण / जानकारी",
+    "example_de": "Wir brauchen von Ihnen folgende Angaben: Name, Adresse, Geburtsdatum.",
+    "example_en": "We need the following details from you: name, address, date of birth.",
+    "emoji": "📄",
+    "rule": "-e",
+    "ruleNote": "Feminine verbal noun ending in -e (angeben -> die Angabe).",
+    "exception": null
+  },
+  {
+    "id": 82,
+    "german": "Angehörige",
+    "article": "der",
+    "plural": "-n",
+    "pos": "noun",
+    "meaning_en": "relative, family member",
+    "meaning_hi": "रिश्तेदार / परिजन",
+    "example_de": "Der Arzt darf nur Familienangehörigen Auskunft geben.",
+    "example_en": "The doctor may only provide information to family members.",
+    "emoji": "👨‍👩‍👧",
+    "rule": "nominalized adj",
+    "ruleNote": "Nominalised adjective: der Angehörige (male), die Angehörige (female).",
+    "exception": null
+  },
+  {
+    "id": 83,
+    "german": "angenehm",
+    "article": null,
+    "plural": "",
+    "pos": "adj",
+    "meaning_en": "pleasant, agreeable",
+    "meaning_hi": "सुखद / आनंददायक",
+    "example_de": "Wir wünschen Ihnen eine angenehme Reise.",
+    "example_en": "We wish you a pleasant journey.",
+    "emoji": "😊",
+    "rule": null,
+    "ruleNote": "Adjective: prefix an- + genehm (agreeable). Opposite: unangenehm.",
+    "exception": null
+  },
+  {
+    "id": 84,
+    "german": "Angst",
+    "article": "die",
+    "plural": "¨-e",
+    "pos": "noun",
+    "meaning_en": "fear, anxiety",
+    "meaning_hi": "डर / भय",
+    "example_de": "Du brauchst keine Angst zu haben.",
+    "example_en": "You don't need to be afraid.",
+    "emoji": "😨",
+    "rule": "abstract",
+    "ruleNote": "Feminine emotion noun: die Angst. Common idiom: Angst haben vor + Dat.",
+    "exception": null
+  },
+  {
+    "id": 85,
+    "german": "ängstlich",
+    "article": null,
+    "plural": "",
+    "pos": "adj",
+    "meaning_en": "anxious, fearful, timid",
+    "meaning_hi": "डरपोक / भयभीत",
+    "example_de": "Meine Mutter ist etwas ängstlich.",
+    "example_en": "My mother is somewhat anxious.",
+    "emoji": "🫣",
+    "rule": "-lich",
+    "ruleNote": "Adjective from noun Angst + -lich (with umlaut).",
+    "exception": null
+  },
+  {
+    "id": 86,
+    "german": "anhaben",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to wear, have on",
+    "meaning_hi": "पहने होना",
+    "example_de": "Gestern hatte Julia ein rotes Kleid an.",
+    "example_en": "Yesterday Julia was wearing a red dress.",
+    "emoji": "👗",
+    "rule": null,
+    "ruleNote": "Separable irregular verb: hat an, hatte an, hat angehabt.",
+    "exception": null
+  },
+  {
+    "id": 87,
+    "german": "anklicken",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to click on",
+    "meaning_hi": "क्लिक करना",
+    "example_de": "Du musst das Bild anklicken. Dann wird es größer.",
+    "example_en": "You have to click on the picture. Then it gets bigger.",
+    "emoji": "🖱️",
+    "rule": null,
+    "ruleNote": "Modern tech verb: klickt an, klickte an, hat angeklickt.",
+    "exception": null
+  },
+  {
+    "id": 88,
+    "german": "ankommen",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to arrive",
+    "meaning_hi": "पहुंचना",
+    "example_de": "Wann kommt der Zug in Hamburg an?",
+    "example_en": "When does the train arrive in Hamburg?",
+    "emoji": "🚉",
+    "rule": null,
+    "ruleNote": "Strong separable verb: kommt an, kam an, ist angekommen (takes sein).",
+    "exception": null
+  },
+  {
+    "id": 89,
+    "german": "Ankunft",
+    "article": "die",
+    "plural": "",
+    "pos": "noun",
+    "meaning_en": "arrival",
+    "meaning_hi": "आगमन / पहुंचना",
+    "example_de": "Die Abfahrt ist um 0.55 Uhr, die Ankunft um 8.07 Uhr.",
+    "example_en": "Departure is at 0:55, arrival at 8:07.",
+    "emoji": "🛬",
+    "rule": "-kunft",
+    "ruleNote": "Nouns ending in -kunft (from kommen) are always feminine (die).",
+    "exception": null
+  },
+  {
+    "id": 90,
+    "german": "ankündigen",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to announce, notify in advance",
+    "meaning_hi": "घोषणा करना / पहले से सूचित करना",
+    "example_de": "Wir sollten unseren Besuch ankündigen.",
+    "example_en": "We should announce our visit.",
+    "emoji": "📣",
+    "rule": null,
+    "ruleNote": "Weak separable verb: kündigt an, kündigte an, hat angekündigt.",
+    "exception": null
+  },
+  {
+    "id": 91,
+    "german": "Anlage",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "meaning_en": "attachment (email), stereo system, facility",
+    "meaning_hi": "संलग्नक / उपकरण / सुविधा",
+    "example_de": "In der Anlage der E-Mail finden Sie meinen Lebenslauf.",
+    "example_en": "In the attachment of the email you will find my CV.",
+    "emoji": "📎",
+    "rule": "-e",
+    "ruleNote": "Feminine verbal noun in -e (anlegen -> die Anlage).",
+    "exception": null
+  },
+  {
+    "id": 92,
+    "german": "Anleitung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "meaning_en": "instructions, manual, guide",
+    "meaning_hi": "निर्देश पुस्तिका / गाइड",
+    "example_de": "In der Anleitung steht, dass bei diesem Spiel der Älteste beginnt.",
+    "example_en": "The instructions state that the oldest starts in this game.",
+    "emoji": "📖",
+    "rule": "-ung",
+    "ruleNote": "Nouns ending in -ung are 100% feminine (die).",
+    "exception": null
+  },
+  {
+    "id": 93,
+    "german": "anmelden",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to register, sign up, log in",
+    "meaning_hi": "पंजीकरण करना",
+    "example_de": "Für diesen Kurs müssen Sie sich unbedingt vorher anmelden.",
+    "example_en": "For this course you must definitely register in advance.",
+    "emoji": "✍️",
+    "rule": null,
+    "ruleNote": "Separable reflexive verb: sich anmelden für + Akkusativ.",
+    "exception": null
+  },
+  {
+    "id": 94,
+    "german": "Anmeldung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "meaning_en": "registration, check-in, reception",
+    "meaning_hi": "पंजीकरण / रिसेप्शन",
+    "example_de": "Die Anmeldung ist im Erdgeschoss, Zimmer 55.",
+    "example_en": "Registration is on the ground floor, room 55.",
+    "emoji": "🏨",
+    "rule": "-ung",
+    "ruleNote": "Nouns ending in -ung are 100% feminine (die).",
+    "exception": null
+  },
+  {
+    "id": 95,
+    "german": "annehmen",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to accept, assume",
+    "meaning_hi": "स्वीकार करना / मान लेना",
+    "example_de": "Ich nehme Ihre Einladung gern an.",
+    "example_en": "I gladly accept your invitation.",
+    "emoji": "🤝",
+    "rule": null,
+    "ruleNote": "Strong separable verb: nimmt an, nahm an, hat angenommen.",
+    "exception": null
+  },
+  {
+    "id": 96,
+    "german": "Annonce",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "meaning_en": "advertisement, classified ad",
+    "meaning_hi": "विज्ञापन",
+    "example_de": "Ich habe alle Annoncen gelesen, aber die Wohnungen sind zu teuer.",
+    "example_en": "I have read all the classified ads, but the apartments are too expensive.",
+    "emoji": "📰",
+    "rule": "-e",
+    "ruleNote": "French loanword ending in -e is feminine (die Annonce). Synonym: die Anzeige.",
+    "exception": null
+  },
+  {
+    "id": 97,
+    "german": "Anrede",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "meaning_en": "form of address, salutation",
+    "meaning_hi": "संबोधन",
+    "example_de": "Du darfst im Brief die Anrede nicht vergessen.",
+    "example_en": "You must not forget the salutation in the letter.",
+    "emoji": "✉️",
+    "rule": "-e",
+    "ruleNote": "Feminine verbal noun ending in -e (anreden -> die Anrede).",
+    "exception": null
+  },
+  {
+    "id": 98,
+    "german": "anrufen",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to call, phone",
+    "meaning_hi": "फ़ोन करना",
+    "example_de": "Ich rufe Sie heute Abend an.",
+    "example_en": "I will phone you this evening.",
+    "emoji": "📞",
+    "rule": null,
+    "ruleNote": "Strong separable verb: ruft an, rief an, hat angerufen. Takes direct Akkusativ object.",
+    "exception": null
+  },
+  {
+    "id": 99,
+    "german": "Anruf",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "meaning_en": "phone call",
+    "meaning_hi": "फ़ोन कॉल",
+    "example_de": "Ich warte auf einen Anruf aus Berlin.",
+    "example_en": "I am waiting for a phone call from Berlin.",
+    "emoji": "📱",
+    "rule": "verb stem",
+    "ruleNote": "Masculine noun derived from verb stem (anrufen -> der Anruf).",
+    "exception": null
+  },
+  {
+    "id": 100,
+    "german": "Anrufbeantworter",
+    "article": "der",
+    "plural": "-",
+    "pos": "noun",
+    "meaning_en": "answering machine",
+    "meaning_hi": "उत्तर देने वाली मशीन (आंसरिंग मशीन)",
+    "example_de": "Ich habe dir eine Nachricht auf den Anrufbeantworter gesprochen.",
+    "example_en": "I left a message on your answering machine.",
+    "emoji": "📼",
+    "rule": "-er",
+    "ruleNote": "Compound ending in der Beantworter. Machine/device names in -er are masculine.",
+    "exception": null
+  },
+  {
+    "id": 101,
+    "german": "Ansage",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "meaning_en": "announcement, voice broadcast",
+    "meaning_hi": "घोषणा / लाउडस्पीकर सूचना",
+    "example_de": "Achten Sie auf die Ansage am Bahnsteig.",
+    "example_en": "Pay attention to the announcement on the platform.",
+    "emoji": "📢",
+    "rule": "-e",
+    "ruleNote": "Feminine verbal noun in -e (ansagen -> die Ansage).",
+    "exception": null
+  },
+  {
+    "id": 102,
+    "german": "anschaffen",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to acquire, purchase, buy",
+    "meaning_hi": "खरीदना / जुटाना",
+    "example_de": "Wir haben uns neue Möbel angeschafft.",
+    "example_en": "We bought new furniture for ourselves.",
+    "emoji": "🛋️",
+    "rule": null,
+    "ruleNote": "Separable verb with reflexive Dativ: sich (Dat.) etwas anschaffen.",
+    "exception": null
+  },
+  {
+    "id": 103,
+    "german": "anschließen",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to connect, plug in",
+    "meaning_hi": "जोड़ना / कनेक्ट करना",
+    "example_de": "Wo kann ich den Computer anschließen?",
+    "example_en": "Where can I connect the computer?",
+    "emoji": "🔌",
+    "rule": null,
+    "ruleNote": "Strong separable verb: schließt an, schloss an, hat angeschlossen.",
+    "exception": null
+  },
+  {
+    "id": 104,
+    "german": "Anschluss",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "meaning_en": "connection (train/flight), telephone hookup",
+    "meaning_hi": "कनेक्शन / संपर्क",
+    "example_de": "In Mannheim haben Sie Anschluss nach Saarbrücken.",
+    "example_en": "In Mannheim you have a connecting train to Saarbrücken.",
+    "emoji": "🚉",
+    "rule": "verb stem",
+    "ruleNote": "Masculine noun derived from verb stem (anschließen -> der Anschluss).",
+    "exception": null
+  },
+  {
+    "id": 105,
+    "german": "anschnallen",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to buckle up, fasten seatbelt",
+    "meaning_hi": "सीटबेल्ट बांधना",
+    "example_de": "Vergiss nicht, dich anzuschnallen.",
+    "example_en": "Don't forget to fasten your seatbelt.",
+    "emoji": "💺",
+    "rule": null,
+    "ruleNote": "Weak separable reflexive verb: sich anschnallen.",
+    "exception": null
+  },
+  {
+    "id": 106,
+    "german": "ansehen",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to look at, watch, view",
+    "meaning_hi": "देखना / निहारना",
+    "example_de": "Darf ich eure Urlaubsfotos ansehen?",
+    "example_en": "May I look at your vacation photos?",
+    "emoji": "📸",
+    "rule": null,
+    "ruleNote": "Strong separable verb: sieht an, sah an, hat angesehen.",
+    "exception": null
+  },
+  {
+    "id": 107,
+    "german": "ansprechen",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to address, speak to someone",
+    "meaning_hi": "बात करना / बोलना",
+    "example_de": "Gestern hat mich unsere neue Nachbarin im Treppenhaus angesprochen.",
+    "example_en": "Yesterday our new neighbor spoke to me in the staircase.",
+    "emoji": "🗣️",
+    "rule": null,
+    "ruleNote": "Strong separable verb: spricht an, sprach an, hat angesprochen.",
+    "exception": null
+  },
+  {
+    "id": 108,
+    "german": "Anspruch",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "meaning_en": "claim, entitlement, demand",
+    "meaning_hi": "दावा / अधिकार",
+    "example_de": "Sie wohnen im Stadtzentrum. Deshalb haben Sie keinen Anspruch auf Fahrgeld.",
+    "example_en": "You live in the city center. Therefore you have no entitlement to travel allowance.",
+    "emoji": "⚖️",
+    "rule": "verb stem",
+    "ruleNote": "Masculine noun derived from verb stem (ansprechen -> der Anspruch).",
+    "exception": null
+  },
+  {
+    "id": 109,
+    "german": "anstellen",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to employ, queue up, turn on",
+    "meaning_hi": "नौकरी पर रखना / कतार में लगना / चालू करना",
+    "example_de": "Da vorne ist die Kasse. Du musst dich anstellen.",
+    "example_en": "The cash register is up there. You have to line up.",
+    "emoji": "🧍",
+    "rule": null,
+    "ruleNote": "Separable verb: stellt an, stellte an, hat angestellt. Sich anstellen = to queue.",
+    "exception": null
+  },
+  {
+    "id": 110,
+    "german": "Angestellte",
+    "article": "der",
+    "plural": "-n",
+    "pos": "noun",
+    "meaning_en": "employee (white-collar)",
+    "meaning_hi": "कर्मचारी",
+    "example_de": "Björn ist Angestellter in einem Reisebüro.",
+    "example_en": "Björn is an employee in a travel agency.",
+    "emoji": "👔",
+    "rule": "nominalized adj",
+    "ruleNote": "Nominalised adjective: der Angestellte (male), die Angestellte (female).",
+    "exception": null
+  },
+  {
+    "id": 111,
+    "german": "anstrengen",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to exert oneself, make an effort",
+    "meaning_hi": "मेहनत करना / ज़ोर लगाना",
+    "example_de": "Wenn du die Prüfung schaffen willst, musst du dich mehr anstrengen.",
+    "example_en": "If you want to pass the exam, you have to make more of an effort.",
+    "emoji": "💪",
+    "rule": null,
+    "ruleNote": "Weak separable verb, often reflexive: sich anstrengen.",
+    "exception": null
+  },
+  {
+    "id": 112,
+    "german": "anstrengend",
+    "article": null,
+    "plural": "",
+    "pos": "adj",
+    "meaning_en": "exhausting, strenuous",
+    "meaning_hi": "थकाऊ / कठिन",
+    "example_de": "Ich finde diese Arbeit sehr anstrengend.",
+    "example_en": "I find this work very exhausting.",
+    "emoji": "😓",
+    "rule": "-end",
+    "ruleNote": "Present participle adjective from anstrengen.",
+    "exception": null
+  },
+  {
+    "id": 113,
+    "german": "Antrag",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "meaning_en": "application, formal request",
+    "meaning_hi": "आवेदन / अर्ज़ी",
+    "example_de": "Haben Sie schon einen Antrag für das Wohngeld ausgefüllt?",
+    "example_en": "Have you already filled out an application for housing benefit?",
+    "emoji": "📝",
+    "rule": "verb stem",
+    "ruleNote": "Masculine noun derived from verb stem (antragen -> der Antrag).",
+    "exception": null
+  },
+  {
+    "id": 114,
+    "german": "anwenden",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to apply, use (medicine/rule)",
+    "meaning_hi": "लागू करना / इस्तेमाल करना",
+    "example_de": "Diese Salbe muss man dreimal am Tag anwenden.",
+    "example_en": "This ointment must be applied three times a day.",
+    "emoji": "🧴",
+    "rule": null,
+    "ruleNote": "Separable mixed verb: wendet an, wandte an, hat angewandt (or angewendet).",
+    "exception": null
+  },
+  {
+    "id": 115,
+    "german": "anwesend",
+    "article": null,
+    "plural": "",
+    "pos": "adj",
+    "meaning_en": "present, in attendance",
+    "meaning_hi": "उपस्थित / हाज़िर",
+    "example_de": "Bei dem Treffen waren alle Mitglieder anwesend.",
+    "example_en": "At the meeting all members were present.",
+    "emoji": "🙋",
+    "rule": "-end",
+    "ruleNote": "Adjective opposite of abwesend.",
+    "exception": null
+  },
+  {
+    "id": 116,
+    "german": "antworten",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to answer, reply",
+    "meaning_hi": "जवाब देना / उत्तर देना",
+    "example_de": "Jorge hat seit drei Wochen nicht auf meinen Brief geantwortet.",
+    "example_en": "Jorge has not replied to my letter for three weeks.",
+    "emoji": "💬",
+    "rule": null,
+    "ruleNote": "Regular verb: antwortet, antwortete, hat geantwortet (antworten auf + Akkusativ).",
+    "exception": null
+  },
+  {
+    "id": 117,
+    "german": "Antwort",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "meaning_en": "answer, response",
+    "meaning_hi": "उत्तर / जवाब",
+    "example_de": "Leider habe ich keine Antwort bekommen.",
+    "example_en": "Unfortunately I received no answer.",
+    "emoji": "✉️",
+    "rule": "abstract",
+    "ruleNote": "Feminine verbal abstract noun (die Antwort). Plural: die Antworten.",
+    "exception": null
+  },
+  {
+    "id": 118,
+    "german": "Anwalt",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "meaning_en": "lawyer, attorney",
+    "meaning_hi": "वकील",
+    "example_de": "Ich möchte zuerst mit meinem Anwalt sprechen.",
+    "example_en": "I would like to speak to my lawyer first.",
+    "emoji": "⚖️",
+    "rule": "person",
+    "ruleNote": "Male profession: masculine (der Anwalt). Female: die Anwältin.",
+    "exception": null
+  },
+  {
+    "id": 119,
+    "german": "anzeigen",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to report to police, indicate",
+    "meaning_hi": "रिपोर्ट करना / पुलिस में शिकायत करना",
+    "example_de": "Wenn Sie hier parken, zeige ich Sie an.",
+    "example_en": "If you park here, I will report you to the police.",
+    "emoji": "🚨",
+    "rule": null,
+    "ruleNote": "Separable weak verb: zeigt an, zeigte an, hat angezeigt.",
+    "exception": null
+  },
+  {
+    "id": 120,
+    "german": "Anzeige",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "meaning_en": "advertisement, police report",
+    "meaning_hi": "विज्ञापन / पुलिस शिकायत",
+    "example_de": "Hier dürfen Sie nicht parken, sonst bekommen Sie eine Anzeige.",
+    "example_en": "You cannot park here, otherwise you will get a police report.",
+    "emoji": "📑",
+    "rule": "-e",
+    "ruleNote": "Feminine verbal noun ending in -e (anzeigen -> die Anzeige).",
+    "exception": null
+  },
+  {
+    "id": 121,
+    "german": "anziehen",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to put on (clothes), dress",
+    "meaning_hi": "कपड़े पहनना",
+    "example_de": "Du musst dich wärmer anziehen, sonst erkältest du dich.",
+    "example_en": "You must dress warmer, otherwise you will catch a cold.",
+    "emoji": "🧥",
+    "rule": null,
+    "ruleNote": "Strong separable verb: zieht an, zog an, hat angezogen (sich anziehen).",
+    "exception": null
+  },
+  {
+    "id": 122,
+    "german": "Anzug",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "meaning_en": "suit (men's)",
+    "meaning_hi": "सूट (पोशाक)",
+    "example_de": "Mein Mann hat sich einen neuen Anzug gekauft.",
+    "example_en": "My husband bought himself a new suit.",
+    "emoji": "🤵",
+    "rule": "verb stem",
+    "ruleNote": "Masculine noun derived from verb stem (anziehen -> der Anzug).",
+    "exception": null
+  },
+  {
+    "id": 123,
+    "german": "Apartment",
+    "article": "das",
+    "plural": "-s",
+    "pos": "noun",
+    "meaning_en": "apartment, flat",
+    "meaning_hi": "अपार्टमेंट / फ्लैट",
+    "example_de": "Wir haben ein Ferienapartment gemietet.",
+    "example_en": "We rented a holiday apartment.",
+    "emoji": "🏢",
+    "rule": "-ment",
+    "ruleNote": "Foreign nouns in -ment (French/English) are neuter (das). Plural: -s.",
+    "exception": null
+  },
+  {
+    "id": 124,
+    "german": "Apfel",
+    "article": "der",
+    "plural": "¨-",
+    "pos": "noun",
+    "meaning_en": "apple",
+    "meaning_hi": "सेब",
+    "example_de": "Zum Frühstück esse ich jeden Tag einen Apfel.",
+    "example_en": "For breakfast I eat an apple every day.",
+    "emoji": "🍎",
+    "rule": "fruit exception",
+    "ruleNote": "Exception! Most fruits in German are feminine (die Birne, die Banane, die Orange), but der Apfel is masculine!",
+    "exception": "Exception: Masculine fruit (der Apfel), whereas 90% of fruits in German are feminine (die)."
+  },
+  {
+    "id": 125,
+    "german": "Apotheke",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "meaning_en": "pharmacy, chemist's",
+    "meaning_hi": "दवाखाना / फार्मेसी",
+    "example_de": "Ist hier in der Nähe eine Apotheke?",
+    "example_en": "Is there a pharmacy nearby?",
+    "emoji": "💊",
+    "rule": "-e/-thek",
+    "ruleNote": "Nouns ending in -thek(e) (Greek loanwords for collections/establishments) are feminine (die).",
+    "exception": null
+  },
+  {
+    "id": 126,
+    "german": "Apparat",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "meaning_en": "apparatus, device, camera/phone",
+    "meaning_hi": "उपकरण / यंत्र",
+    "example_de": "Können Sie den Apparat bitte etwas leiser stellen?",
+    "example_en": "Could you please turn the device down a bit?",
+    "emoji": "📷",
+    "rule": "-at",
+    "ruleNote": "Latin loanwords ending in stressed -at are masculine (der Apparat).",
+    "exception": null
+  },
+  {
+    "id": 127,
+    "german": "Appetit",
+    "article": "der",
+    "plural": "",
+    "pos": "noun",
+    "meaning_en": "appetite",
+    "meaning_hi": "भूख / अभिरुचि",
+    "example_de": "Ich habe heute keinen Appetit. Ich mag nichts essen.",
+    "example_en": "I have no appetite today. I don't feel like eating anything.",
+    "emoji": "🍽️",
+    "rule": "-it",
+    "ruleNote": "Latin/French loan noun in -it: masculine (der Appetit). Phrase: Guten Appetit!",
+    "exception": null
+  },
+  {
+    "id": 128,
+    "german": "Aprikose",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "meaning_en": "apricot",
+    "meaning_hi": "खुबानी",
+    "example_de": "Schmecken dir die Aprikosen?",
+    "example_en": "Do you like the apricots?",
+    "emoji": "🍑",
+    "rule": "-e",
+    "ruleNote": "Fruits ending in -e are feminine (die). In Austria: die Marille.",
+    "exception": null
+  },
+  {
+    "id": 129,
+    "german": "arbeiten",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to work",
+    "meaning_hi": "काम करना",
+    "example_de": "Arzu arbeitet als Krankenschwester im Krankenhaus.",
+    "example_en": "Arzu works as a nurse in the hospital.",
+    "emoji": "💼",
+    "rule": null,
+    "ruleNote": "Regular weak verb: arbeitet, arbeitete, hat gearbeitet (arbeiten als/bei).",
+    "exception": null
+  },
+  {
+    "id": 130,
+    "german": "Arbeit",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "meaning_en": "work, job, labor",
+    "meaning_hi": "काम / कार्य",
+    "example_de": "Nach der Ausbildung hat Mohamed eine Arbeit gefunden.",
+    "example_en": "After vocational training Mohamed found a job.",
+    "emoji": "🛠️",
+    "rule": "-t",
+    "ruleNote": "Feminine abstract noun ending in -t (die Arbeit). Plural: die Arbeiten.",
+    "exception": null
+  },
+  {
+    "id": 131,
+    "german": "Arbeiter",
+    "article": "der",
+    "plural": "-",
+    "pos": "noun",
+    "meaning_en": "worker, laborer",
+    "meaning_hi": "मज़दूर / कर्मचारी",
+    "example_de": "Maria ist seit zwei Jahren Arbeiterin bei Siemens.",
+    "example_en": "Maria has been a worker at Siemens for two years.",
+    "emoji": "👷",
+    "rule": "-er",
+    "ruleNote": "Agent nouns ending in -er are masculine (der Arbeiter). Female: die Arbeiterin.",
+    "exception": null
+  },
+  {
+    "id": 132,
+    "german": "Arbeitserlaubnis",
+    "article": "die",
+    "plural": "-se",
+    "pos": "noun",
+    "meaning_en": "work permit",
+    "meaning_hi": "कार्य अनुमति (वर्क परमिट)",
+    "example_de": "Haben Sie eine Arbeitserlaubnis?",
+    "example_en": "Do you have a work permit?",
+    "emoji": "🪪",
+    "rule": "-nis",
+    "ruleNote": "Compound ending in die Erlaubnis. Nouns in -nis are partly feminine (die Erlaubnis/Kenntnis) and partly neuter (das Zeugnis).",
+    "exception": null
+  },
+  {
+    "id": 133,
+    "german": "arbeitslos",
+    "article": null,
+    "plural": "",
+    "pos": "adj",
+    "meaning_en": "unemployed, out of work",
+    "meaning_hi": "बेरोज़गार",
+    "example_de": "Wie lange sind Sie schon arbeitslos?",
+    "example_en": "How long have you been unemployed?",
+    "emoji": "📋",
+    "rule": "-los",
+    "ruleNote": "Privative suffix -los denotes 'without' (Arbeit + -los).",
+    "exception": null
+  },
+  {
+    "id": 134,
+    "german": "Arbeitslosigkeit",
+    "article": "die",
+    "plural": "",
+    "pos": "noun",
+    "meaning_en": "unemployment",
+    "meaning_hi": "बेरोज़गारी",
+    "example_de": "Die Arbeitslosigkeit ist gesunken.",
+    "example_en": "Unemployment has decreased.",
+    "emoji": "📉",
+    "rule": "-keit",
+    "ruleNote": "Nouns ending in -keit are 100% feminine (die) without exception.",
+    "exception": null
+  },
+  {
+    "id": 135,
+    "german": "Arbeitsplatz",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "meaning_en": "workplace, job",
+    "meaning_hi": "कार्यस्थल / नौकरी",
+    "example_de": "In der Industrie gibt es immer weniger Arbeitsplätze.",
+    "example_en": "In industry there are fewer and fewer jobs.",
+    "emoji": "🖥️",
+    "rule": "compound",
+    "ruleNote": "Compound ending in der Platz. Takes the masculine gender of der Platz.",
+    "exception": null
+  },
+  {
+    "id": 136,
+    "german": "Arbeitsstelle",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "meaning_en": "job, position, post",
+    "meaning_hi": "नौकरी / कार्यस्थल",
+    "example_de": "Meine Frau hat eine neue Arbeitsstelle gefunden.",
+    "example_en": "My wife found a new job position.",
+    "emoji": "💼",
+    "rule": "-e/compound",
+    "ruleNote": "Compound ending in die Stelle (feminine in -e).",
+    "exception": null
+  },
+  {
+    "id": 137,
+    "german": "Architekt",
+    "article": "der",
+    "plural": "-en",
+    "pos": "noun",
+    "meaning_en": "architect",
+    "meaning_hi": "वास्तुकार / आर्किटेक्ट",
+    "example_de": "Dieses Haus hat eine berühmte Architektin gebaut.",
+    "example_en": "A famous architect built this house.",
+    "emoji": "📐",
+    "rule": "person",
+    "ruleNote": "Weak masculine noun (N-Deklination): der Architekt, des Architekten.",
+    "exception": null
+  },
+  {
+    "id": 138,
+    "german": "ärgern",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to annoy, irritate, bother",
+    "meaning_hi": "परेशान करना / गुस्सा होना",
+    "example_de": "Mein Bruder hat mich schon als Kind immer geärgert.",
+    "example_en": "Even as a child my brother always annoyed me.",
+    "emoji": "😠",
+    "rule": null,
+    "ruleNote": "Reflexive verb: sich ärgern über + Akkusativ.",
+    "exception": null
+  },
+  {
+    "id": 139,
+    "german": "Ärger",
+    "article": "der",
+    "plural": "",
+    "pos": "noun",
+    "meaning_en": "trouble, annoyance, anger",
+    "meaning_hi": "परेशानी / गुस्सा",
+    "example_de": "Ich hatte heute Ärger im Büro.",
+    "example_en": "I had trouble in the office today.",
+    "emoji": "😤",
+    "rule": "emotion",
+    "ruleNote": "Masculine abstract noun from verb stem (ärgern -> der Ärger).",
+    "exception": null
+  },
+  {
+    "id": 140,
+    "german": "ärgerlich",
+    "article": null,
+    "plural": "",
+    "pos": "adj",
+    "meaning_en": "annoying, aggravating",
+    "meaning_hi": "कष्टप्रद / नाराज़ करने वाला",
+    "example_de": "Der Zug hat schon wieder Verspätung. Das ist wirklich ärgerlich.",
+    "example_en": "The train is delayed again. That is really annoying.",
+    "emoji": "🤦",
+    "rule": "-lich",
+    "ruleNote": "Adjective ending in -lich expressing causing annoyance.",
+    "exception": null
+  },
+  {
+    "id": 141,
+    "german": "arm",
+    "article": null,
+    "plural": "",
+    "pos": "adj",
+    "meaning_en": "poor",
+    "meaning_hi": "गरीब / निर्धन",
+    "example_de": "Die Regierung hilft armen Nachbarländern.",
+    "example_en": "The government helps poor neighboring countries.",
+    "emoji": "🪙",
+    "rule": null,
+    "ruleNote": "Adjective taking umlaut in comparison: arm, ärmer, am ärmsten. Opposite: reich.",
+    "exception": null
+  },
+  {
+    "id": 142,
+    "german": "Arm",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "meaning_en": "arm",
+    "meaning_hi": "बाँह / भुजा",
+    "example_de": "Mein Freund hat sich den Arm gebrochen.",
+    "example_en": "My friend broke his arm.",
+    "emoji": "💪",
+    "rule": "body part",
+    "ruleNote": "Masculine body part noun: der Arm. Plural: die Arme.",
+    "exception": null
+  },
+  {
+    "id": 143,
+    "german": "Art",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "meaning_en": "kind, species, manner, way",
+    "meaning_hi": "प्रकार / तरीका / प्रजाति",
+    "example_de": "Im Zoo haben sie 34 verschiedene Arten von Vögeln.",
+    "example_en": "In the zoo they have 34 different species of birds.",
+    "emoji": "🦜",
+    "rule": "-t",
+    "ruleNote": "Feminine abstract noun: die Art. Phrase: auf unterschiedliche Art und Weise.",
+    "exception": null
+  },
+  {
+    "id": 144,
+    "german": "Artikel",
+    "article": "der",
+    "plural": "-",
+    "pos": "noun",
+    "meaning_en": "article (grammar/newspaper), item",
+    "meaning_hi": "लेख / व्याकरण का आर्टिकल",
+    "example_de": "Im Deutschen gibt es drei Artikel: der, die, das.",
+    "example_en": "In German there are three articles: der, die, das.",
+    "emoji": "📰",
+    "rule": "-el",
+    "ruleNote": "Latin loanword in -el: masculine (der Artikel). Plural is unchanged (die Artikel).",
+    "exception": null
+  },
+  {
+    "id": 145,
+    "german": "Arzt",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "meaning_en": "doctor, physician",
+    "meaning_hi": "डॉक्टर / चिकित्सक",
+    "example_de": "Ich muss heute zum Arzt.",
+    "example_en": "I have to go to the doctor today.",
+    "emoji": "🩺",
+    "rule": "person",
+    "ruleNote": "Masculine profession noun: der Arzt. Feminine: die Ärztin (-nen).",
+    "exception": null
+  },
+  {
+    "id": 146,
+    "german": "Asyl",
+    "article": "das",
+    "plural": "",
+    "pos": "noun",
+    "meaning_en": "asylum, sanctuary",
+    "meaning_hi": "शरण / आश्रय",
+    "example_de": "Die Menschen sind auf der Flucht und bitten um Asyl.",
+    "example_en": "The people are fleeing and asking for asylum.",
+    "emoji": "🕊️",
+    "rule": "greek loan",
+    "ruleNote": "Greek neuter noun: das Asyl (sanctuary).",
+    "exception": null
+  },
+  {
+    "id": 147,
+    "german": "atmen",
+    "article": null,
+    "plural": "",
+    "pos": "verb",
+    "meaning_en": "to breathe",
+    "meaning_hi": "साँस लेना",
+    "example_de": "Er hat eine Erkältung und kann nicht durch die Nase atmen.",
+    "example_en": "He has a cold and cannot breathe through his nose.",
+    "emoji": "🫁",
+    "rule": null,
+    "ruleNote": "Regular verb: atmet, atmete, hat geatmet.",
+    "exception": null
+  },
+  {
+    "id": 148,
+    "german": "Atem",
+    "article": "der",
+    "plural": "",
+    "pos": "noun",
+    "meaning_en": "breath",
+    "meaning_hi": "साँस",
+    "example_de": "Bitte den Atem anhalten.",
+    "example_en": "Please hold your breath.",
+    "emoji": "💨",
+    "rule": "-em",
+    "ruleNote": "Masculine noun derived from verb stem atmen: der Atem.",
+    "exception": null
+  },
+  {
+    "id": 149,
+    "german": "auch",
+    "article": null,
+    "plural": "",
+    "pos": "adv",
+    "meaning_en": "also, too, as well",
+    "meaning_hi": "भी",
+    "example_de": "Ich muss leider gehen. – Ich auch.",
+    "example_en": "Unfortunately I have to go. – Me too.",
+    "emoji": "➕",
+    "rule": null,
+    "ruleNote": "Focus particle / additive adverb.",
+    "exception": null
+  },
+  {
+    "id": 150,
+    "german": "auf",
+    "article": null,
+    "plural": "",
+    "pos": "prep",
+    "meaning_en": "on, upon, onto, at",
+    "meaning_hi": "पर / ऊपर",
+    "example_de": "Deine Brille liegt auf dem Schreibtisch.",
+    "example_en": "Your glasses are lying on the desk.",
+    "emoji": "🔛",
+    "rule": null,
+    "ruleNote": "Two-way preposition (Wechselpräposition): Dative for horizontal surface location, Accusative for movement onto.",
+    "exception": null
+  }
+];
+
+    const LEVELS = {
+      1: LEVEL_1
+    };
+
+    /* App State and Audio/Speech Engine */
+    const STORAGE_KEY = "b1_wortschatz_data_v1";
+
+    const defaultState = {
+      level: 1,
+      hearts: 3,
+      xp: 0,
+      streak: 1,
+      lastActiveDate: new Date().toISOString().slice(0, 10),
+      completedLessons: {}, // { "1_1": 3, "1_2": 3 }
+      unlockedUnits: [1],
+      completedUnits: {},
+      masteredWords: [],
+      skippedWords: [],
+      mistakes: {}, // { wordId: { count: 1, lastSeen: timestamp } }
+      wordStats: {}, // { wordId: { c: 0, w: 0 } }
+      articleStats: {
+        der: { c: 0, w: 0 },
+        die: { c: 0, w: 0 },
+        das: { c: 0, w: 0 }
+      },
+      sprintHighScore: 0,
+      settings: {
+        sound: true,
+        slowAudio: false,
+        theme: "light"
+      }
+    };
+
+    let state = loadState();
+
+    function loadState() {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          return Object.assign({}, defaultState, parsed);
+        }
+      } catch (e) {
+        console.error("Storage load error", e);
+      }
+      return Object.assign({}, defaultState);
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {
+        console.error("Storage save error", e);
+      }
+      updateHeaderStats();
+    }
+
+    /* Sound Synthesizer via Web Audio API */
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+      }
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) {
+            this.ctx = new AudioContext();
+          }
+        }
+      }
+      playCorrect() {
+        if (!state.settings.sound) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(523.25, now); // C5
+        osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
+        osc.frequency.setValueAtTime(783.99, now + 0.16); // G5
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+        osc.start(now);
+        osc.stop(now + 0.35);
+      }
+      playWrong() {
+        if (!state.settings.sound) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(180, now);
+        osc.frequency.exponentialRampToValueAtTime(110, now + 0.25);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+        osc.start(now);
+        osc.stop(now + 0.25);
+      }
+      playFanfare() {
+        if (!state.settings.sound) return;
+        this.init();
+        if (!this.ctx) return;
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+          const now = this.ctx.currentTime + (idx * 0.1);
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(freq, now);
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+          osc.start(now);
+          osc.stop(now + 0.4);
+        });
+      }
+    }
+    const sounds = new SoundEngine();
+
+    /* Text to Speech Bridge with Android integration fallback */
+    function speakGerman(text) {
+      const rate = state.settings.slowAudio ? 0.65 : 0.88;
+      // 1. Android Bridge if available
+      if (window.AndroidBridge && typeof window.AndroidBridge.speak === "function") {
+        try {
+          window.AndroidBridge.speak(text, rate);
+          return;
+        } catch (e) {
+          console.warn("AndroidBridge TTS failed, falling back to Web Speech", e);
+        }
+      }
+      // 2. Standard Web SpeechSynthesis API
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = "de-DE";
+        utterance.rate = rate;
+        utterance.pitch = 1.0;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function triggerHaptic(duration = 40) {
+      if (window.AndroidBridge && typeof window.AndroidBridge.vibrate === "function") {
+        try { window.AndroidBridge.vibrate(duration); return; } catch(e) {}
+      }
+      if ("vibrate" in navigator) {
+        try { navigator.vibrate(duration); } catch(e) {}
+      }
+    }
+
+    /* Confetti Particle Engine */
+    const canvas = document.getElementById("confetti-canvas");
+    const ctx = canvas.getContext("2d");
+    let confettiParticles = [];
+    let confettiAnim = null;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    function launchConfetti() {
+      confettiParticles = [];
+      const colors = ["#4f46e5", "#10b981", "#f59e0b", "#ef4444", "#3b82f6", "#ec4899"];
+      for (let i = 0; i < 90; i++) {
+        confettiParticles.push({
+          x: canvas.width / 2,
+          y: canvas.height / 2,
+          w: Math.random() * 8 + 4,
+          h: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          vx: (Math.random() - 0.5) * 16,
+          vy: (Math.random() - 0.7) * 18,
+          gravity: 0.45,
+          rotation: Math.random() * 360,
+          rotationSpeed: (Math.random() - 0.5) * 10,
+          opacity: 1
+        });
+      }
+      if (confettiAnim) cancelAnimationFrame(confettiAnim);
+      animateConfetti();
+    }
+
+    function animateConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let alive = false;
+      confettiParticles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += p.gravity;
+        p.rotation += p.rotationSpeed;
+        p.opacity -= 0.009;
+        if (p.opacity > 0) {
+          alive = true;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rotation * Math.PI) / 180);
+          ctx.globalAlpha = p.opacity;
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          ctx.restore();
+        }
+      });
+      if (alive) {
+        confettiAnim = requestAnimationFrame(animateConfetti);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    /* Navigation & Tabs */
+    const navItems = document.querySelectorAll(".nav-item");
+    const screens = document.querySelectorAll(".screen");
+
+    navItems.forEach(item => {
+      item.addEventListener("click", () => {
+        const targetId = item.getAttribute("data-target");
+        switchScreen(targetId);
+      });
+    });
+
+    function switchScreen(screenId) {
+      triggerHaptic(20);
+      screens.forEach(s => s.classList.remove("active"));
+      navItems.forEach(n => n.classList.remove("active"));
+
+      const target = document.getElementById(screenId);
+      if (target) target.classList.add("active");
+
+      const navBtn = document.querySelector(`.nav-item[data-target="${screenId}"]`);
+      if (navBtn) navBtn.classList.add("active");
+
+      if (screenId === "notebook-screen") renderMistakeNotebook();
+      if (screenId === "stats-screen") renderStatsPage();
+      if (screenId === "sprint-screen") {
+        document.getElementById("sprint-intro").style.display = "block";
+        document.getElementById("sprint-game").style.display = "none";
+        document.getElementById("sprint-high-score").innerText = state.sprintHighScore || 0;
+      }
+    }
+
+    /* Header Stats UI */
+    function updateHeaderStats() {
+      document.getElementById("hearts-count").innerText = state.hearts;
+      document.getElementById("streak-count").innerText = state.streak;
+      document.getElementById("xp-count").innerText = state.xp;
+
+      const mistakeCount = Object.keys(state.mistakes).length;
+      const badge = document.getElementById("notebook-badge");
+      if (mistakeCount > 0) {
+        badge.style.display = "flex";
+        badge.innerText = mistakeCount;
+      } else {
+        badge.style.display = "none";
+      }
+    }
+
+    /* Render Level 1 Path */
+    const unitsData = [
+      { id: 1, title: "Reisen & Anfänge", sub: "Travel & First Steps", emoji: "🛫", range: "Words 1 – 25" },
+      { id: 2, title: "Verwaltung & Leben", sub: "Admin & Daily Life", emoji: "🏢", range: "Words 26 – 50" },
+      { id: 3, title: "Optionen & Welt", sub: "Choices & Society", emoji: "🌍", range: "Words 51 – 75" },
+      { id: 4, title: "Kontakt & Ankunft", sub: "Connecting & Transit", emoji: "🚉", range: "Words 76 – 100" },
+      { id: 5, title: "Arbeitswelt & Recht", sub: "Workplace & Law", emoji: "💼", range: "Words 101 – 125" },
+      { id: 6, title: "Beruf, Arzt & Atem", sub: "Careers, Body & Health", emoji: "🩺", range: "Words 126 – 150" }
+    ];
+
+    function renderUnitsPath() {
+      const container = document.getElementById("units-path-container");
+      // Remove old unit nodes
+      const oldNodes = container.querySelectorAll(".unit-node-wrapper");
+      oldNodes.forEach(n => n.remove());
+
+      unitsData.forEach((unit, idx) => {
+        const isUnlocked = state.unlockedUnits.includes(unit.id);
+        const isCompleted = state.completedUnits[unit.id] && state.completedUnits[unit.id].passed;
+        const isActive = isUnlocked && !isCompleted;
+
+        const node = document.createElement("div");
+        node.className = `unit-node-wrapper ${isCompleted ? "completed" : isActive ? "active" : "locked"}`;
+        node.setAttribute("data-unit-id", unit.id);
+
+        let starsHtml = "";
+        if (isCompleted) {
+          starsHtml = `<div class="unit-stars">⭐⭐⭐</div>`;
+        }
+
+        node.innerHTML = `
+          <div class="unit-circle">
+            <span class="unit-emoji">${unit.emoji}</span>
+            ${starsHtml}
+          </div>
+          <div class="unit-label-box">
+            <div class="unit-label-title">Unit ${unit.id}: ${unit.title}</div>
+            <div class="unit-label-sub">${unit.range} • ${unit.sub}</div>
+          </div>
+        `;
+
+        node.addEventListener("click", () => {
+          if (!isUnlocked) {
+            triggerHaptic(60);
+            alert(`Complete the Boss Quiz of Unit ${unit.id - 1} with 80%+ to unlock Unit ${unit.id}!`);
+            return;
+          }
+          openUnitModal(unit.id);
+        });
+
+        container.appendChild(node);
+      });
+    }
+
+    /* Unit Modal (Lessons 1..5 + Boss Quiz) */
+    const unitModal = document.getElementById("unit-modal");
+    document.getElementById("close-unit-modal-btn").addEventListener("click", () => {
+      unitModal.classList.remove("open");
+    });
+
+    function openUnitModal(unitId) {
+      triggerHaptic(25);
+      const unit = unitsData.find(u => u.id === unitId);
+      document.getElementById("unit-modal-title").innerText = `Unit ${unit.id}: ${unit.title}`;
+      document.getElementById("unit-modal-subtitle").innerText = `${unit.range} • 5 Lessons + Boss Quiz`;
+
+      const list = document.getElementById("unit-modal-lessons-list");
+      list.innerHTML = "";
+
+      // 5 Lessons, 5 words each
+      for (let l = 1; l <= 5; l++) {
+        const lessonKey = `${unitId}_${l}`;
+        const isDone = !!state.completedLessons[lessonKey];
+        const startIdx = (unitId - 1) * 25 + (l - 1) * 5;
+        const wordsInLesson = LEVEL_1.slice(startIdx, startIdx + 5);
+        const sampleWords = wordsInLesson.map(w => w.german).join(", ");
+
+        const card = document.createElement("div");
+        card.className = `lesson-row-card ${isDone ? "completed" : ""}`;
+        card.innerHTML = `
+          <div>
+            <div style="font-weight:800; font-size:1rem;">Lesson ${unitId}.${l} ${isDone ? "⭐" : ""}</div>
+            <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">${sampleWords}</div>
+          </div>
+          <div style="font-weight:700; color:var(--primary); font-size:0.9rem;">
+            ${isDone ? "Review" : "Start"} →
+          </div>
+        `;
+        card.addEventListener("click", () => {
+          unitModal.classList.remove("open");
+          startLesson(unitId, l, wordsInLesson);
+        });
+        list.appendChild(card);
+      }
+
+      // Boss Quiz Row
+      const bossKey = `unit_${unitId}_boss`;
+      const isBossPassed = state.completedUnits[unitId] && state.completedUnits[unitId].passed;
+      const bossCard = document.createElement("div");
+      bossCard.className = "boss-quiz-card";
+      bossCard.innerHTML = `
+        <div>
+          <div style="font-size:1.1rem; font-weight:900;">👑 Unit ${unitId} Boss Quiz</div>
+          <div style="font-size:0.82rem; opacity:0.9;">20 mixed questions • 80% to pass</div>
+        </div>
+        <div style="font-size:1.1rem; font-weight:800;">
+          ${isBossPassed ? "Passed 🏆" : "Challenge →"}
+        </div>
+      `;
+      bossCard.addEventListener("click", () => {
+        unitModal.classList.remove("open");
+        startBossQuiz(unitId);
+      });
+      list.appendChild(bossCard);
+
+      unitModal.classList.add("open");
+    }
+
+    /* =====================================================================
+       INTERACTIVE LESSON ENGINE (5 Words Per Lesson)
+       Flow:
+       1. Introduce (3D Flip Card) + "I already know this" skip button
+       2. Meaning MCQ (4 options, same POS)
+       3. Article MCQ (der / die / das) for nouns
+       4. Fill in the blank (Goethe example sentence)
+       5. Meaning to German typing recall with umlaut helpers
+       6. Mixed review: wrong words re-queued
+       ===================================================================== */
+    let currentLesson = {
+      unitId: 1,
+      lessonId: 1,
+      words: [],
+      currentIndex: 0,
+      currentStep: 1,
+      reviewQueue: [],
+      missedWordIds: new Set(),
+      totalSteps: 0,
+      completedSteps: 0
+    };
+
+    const lessonViewport = document.getElementById("lesson-viewport");
+    const lessonStepContainer = document.getElementById("lesson-step-container");
+    const lessonProgressFill = document.getElementById("lesson-progress-fill");
+    const lessonHeartsVal = document.getElementById("lesson-hearts-val");
+    const feedbackDrawer = document.getElementById("feedback-drawer");
+
+    document.getElementById("exit-lesson-btn").addEventListener("click", () => {
+      if (confirm("Are you sure you want to quit this lesson? Your progress for this session will be lost.")) {
+        lessonViewport.style.display = "none";
+      }
+    });
+
+    function startLesson(unitId, lessonId, words) {
+      if (state.hearts <= 0) {
+        alert("You are out of hearts! Practice mistakes in your Notebook to refill hearts.");
+        switchScreen("notebook-screen");
+        return;
+      }
+      currentLesson = {
+        unitId,
+        lessonId,
+        words: [...words],
+        currentIndex: 0,
+        currentStep: 1,
+        reviewQueue: [],
+        missedWordIds: new Set(),
+        totalSteps: words.length * 5,
+        completedSteps: 0
+      };
+      lessonViewport.style.display = "flex";
+      updateLessonProgress();
+      renderCurrentStep();
+    }
+
+    function updateLessonProgress() {
+      const pct = Math.min(100, Math.round((currentLesson.completedSteps / currentLesson.totalSteps) * 100));
+      lessonProgressFill.style.width = pct + "%";
+      lessonHeartsVal.innerText = state.hearts;
+    }
+
+    function renderCurrentStep() {
+      lessonStepContainer.innerHTML = "";
+      feedbackDrawer.classList.remove("open");
+
+      // Check if finished base words
+      if (currentLesson.currentIndex >= currentLesson.words.length) {
+        if (currentLesson.reviewQueue.length > 0) {
+          // Mixed Review Step
+          renderReviewStep();
+        } else {
+          // Completed lesson!
+          completeLesson();
+        }
+        return;
+      }
+
+      const word = currentLesson.words[currentLesson.currentIndex];
+
+      if (currentLesson.currentStep === 1) {
+        renderIntroduceStep(word);
+      } else if (currentLesson.currentStep === 2) {
+        renderMeaningMCQStep(word);
+      } else if (currentLesson.currentStep === 3) {
+        if (word.pos === "noun" && word.article) {
+          renderArticleMCQStep(word);
+        } else {
+          // Skip article step for non-nouns
+          currentLesson.completedSteps++;
+          currentLesson.currentStep = 4;
+          renderCurrentStep();
+        }
+      } else if (currentLesson.currentStep === 4) {
+        renderFillBlankStep(word);
+      } else if (currentLesson.currentStep === 5) {
+        renderTypingStep(word);
+      }
+    }
+
+    /* STEP 1: INTRODUCE (Flip Card) */
+    function renderIntroduceStep(word) {
+      let articleClass = word.article ? `article-${word.article}` : "";
+      let articleColorBadge = word.article ? `<span class="article-tag badge-${word.article}" style="margin-left:6px;">${word.article}</span>` : "";
+
+      let highlightedWord = word.german;
+      if (word.rule && word.article) {
+        const cleanRule = word.rule.replace("-", "");
+        if (word.german.toLowerCase().endsWith(cleanRule.toLowerCase())) {
+          const idx = word.german.toLowerCase().lastIndexOf(cleanRule.toLowerCase());
+          highlightedWord = word.german.slice(0, idx) + `<u><b>${word.german.slice(idx)}</b></u>`;
+        }
+      }
+
+      let ruleChipHtml = "";
+      if (word.rule) {
+        ruleChipHtml = `<div class="rule-chip">🏷️ Rule: ${word.article ? word.article + " : " : ""}${word.rule}</div>`;
+      }
+      let exceptionHtml = "";
+      if (word.exception) {
+        exceptionHtml = `<div class="exception-badge">⚠️ ${word.exception}</div>`;
+      }
+
+      const html = `
+        <div style="text-align:center; margin-bottom:8px;">
+          <span style="font-size:0.85rem; font-weight:800; text-transform:uppercase; color:var(--primary); letter-spacing:1px;">Step 1 • New Word</span>
+        </div>
+        <div class="flip-card-wrapper">
+          <div class="flip-card-inner" id="lesson-flip-card">
+            <!-- Front -->
+            <div class="flip-card-front">
+              <div class="card-emoji">${word.emoji}</div>
+              <div class="card-word ${articleClass}">${highlightedWord} ${articleColorBadge}</div>
+              <div class="card-pos-chip ${articleClass ? 'badge-' + word.article : 'badge-der'}" style="margin-top:4px;">
+                ${word.pos}${word.plural ? " • Plural: " + word.plural : ""}
+              </div>
+              <div class="tap-hint">
+                <span>👆</span> Tap card to flip & reveal meaning
+              </div>
+            </div>
+            <!-- Back -->
+            <div class="flip-card-back">
+              <div>
+                <div class="card-meaning-en">${word.meaning_en}</div>
+                <div class="card-meaning-hi">${word.meaning_hi}</div>
+                ${ruleChipHtml}
+                ${exceptionHtml}
+              </div>
+
+              <div class="card-example-box">
+                <div class="card-example-de">${word.example_de}</div>
+                <div class="card-example-en">${word.example_en}</div>
+              </div>
+
+              <div class="audio-btns-row">
+                <button class="audio-btn" id="speak-word-btn">🔊 Word</button>
+                <button class="audio-btn" id="speak-sentence-btn">🔊 Sentence</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-action-bar">
+          <button class="btn-secondary" id="skip-known-btn" title="Mark as known and permanently skip from future tests">
+            ✓ I already know this
+          </button>
+          <button class="btn-primary" id="continue-intro-btn">
+            Continue →
+          </button>
+        </div>
+      `;
+      lessonStepContainer.innerHTML = html;
+
+      const flipCard = document.getElementById("lesson-flip-card");
+      flipCard.addEventListener("click", () => {
+        flipCard.classList.toggle("flipped");
+        triggerHaptic(20);
+        speakGerman(word.german);
+      });
+
+      document.getElementById("speak-word-btn").addEventListener("click", (e) => {
+        e.stopPropagation();
+        triggerHaptic(20);
+        speakGerman(word.german);
+      });
+
+      document.getElementById("speak-sentence-btn").addEventListener("click", (e) => {
+        e.stopPropagation();
+        triggerHaptic(20);
+        speakGerman(word.example_de);
+      });
+
+      document.getElementById("skip-known-btn").addEventListener("click", () => {
+        if (!state.masteredWords.includes(word.id)) state.masteredWords.push(word.id);
+        if (!state.skippedWords.includes(word.id)) state.skippedWords.push(word.id);
+        saveState();
+        triggerHaptic(30);
+        sounds.playCorrect();
+        currentLesson.completedSteps += 5;
+        currentLesson.currentIndex++;
+        currentLesson.currentStep = 1;
+        updateLessonProgress();
+        renderCurrentStep();
+      });
+
+      document.getElementById("continue-intro-btn").addEventListener("click", () => {
+        triggerHaptic(25);
+        currentLesson.completedSteps++;
+        currentLesson.currentStep = 2;
+        updateLessonProgress();
+        renderCurrentStep();
+      });
+    }
+
+    /* STEP 2: MEANING MCQ (4 Options from same POS) */
+    function renderMeaningMCQStep(word) {
+      // Pick 3 distractors from same POS or all words
+      let pool = LEVEL_1.filter(w => w.id !== word.id && w.pos === word.pos);
+      if (pool.length < 3) pool = LEVEL_1.filter(w => w.id !== word.id);
+      shuffleArray(pool);
+      const options = [word, pool[0], pool[1], pool[2]];
+      shuffleArray(options);
+
+      const html = `
+        <div class="mcq-question-header">
+          <span style="font-size:0.85rem; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Step 2 • Meaning Match</span>
+          <div class="card-emoji" style="font-size:3.5rem; margin-top:8px;">${word.emoji}</div>
+          <div class="mcq-prompt-word ${word.article ? 'article-' + word.article : ''}">${word.article ? word.article + ' ' : ''}${word.german}</div>
+        </div>
+        <div class="mcq-grid" id="meaning-mcq-options">
+          ${options.map((opt, i) => `
+            <div class="mcq-option" data-id="${opt.id}">
+              <div>
+                <div style="font-size:1.05rem; font-weight:800;">${opt.meaning_en}</div>
+                <div style="font-size:0.9rem; color:var(--text-muted);">${opt.meaning_hi}</div>
+              </div>
+              <span style="font-size:1.1rem; opacity:0.3;">●</span>
+            </div>
+          `).join("")}
+        </div>
+      `;
+      lessonStepContainer.innerHTML = html;
+      speakGerman(word.german);
+
+      const optElements = document.querySelectorAll(".mcq-option");
+      let answered = false;
+      optElements.forEach(btn => {
+        btn.addEventListener("click", () => {
+          if (answered) return;
+          answered = true;
+          const selectedId = parseInt(btn.getAttribute("data-id"));
+          if (selectedId === word.id) {
+            btn.classList.add("correct");
+            sounds.playCorrect();
+            triggerHaptic(30);
+            showFeedback(true, "Correct meaning!", `${word.meaning_en} • ${word.meaning_hi}`, () => {
+              currentLesson.completedSteps++;
+              currentLesson.currentStep = 3;
+              updateLessonProgress();
+              renderCurrentStep();
+            });
+          } else {
+            btn.classList.add("wrong");
+            // Highlight correct one
+            optElements.forEach(o => {
+              if (parseInt(o.getAttribute("data-id")) === word.id) o.classList.add("correct");
+            });
+            sounds.playWrong();
+            triggerHaptic(70);
+            handleMistake(word);
+            showFeedback(false, "Not quite right", `<b>${word.german}</b> means "${word.meaning_en}" (${word.meaning_hi}).`, () => {
+              currentLesson.completedSteps++;
+              currentLesson.currentStep = 3;
+              updateLessonProgress();
+              renderCurrentStep();
+            });
+          }
+        });
+      });
+    }
+
+    /* STEP 3: ARTICLE MCQ (der / die / das) */
+    function renderArticleMCQStep(word) {
+      const html = `
+        <div class="mcq-question-header">
+          <span style="font-size:0.85rem; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Step 3 • Noun Gender</span>
+          <div class="card-emoji" style="font-size:3.5rem; margin-top:8px;">${word.emoji}</div>
+          <div class="mcq-prompt-word">_____ ${word.german}</div>
+          <div style="color:var(--text-muted); font-size:1rem; margin-top:4px;">${word.meaning_en} • ${word.meaning_hi}</div>
+          ${word.plural ? `<div style="font-size:0.85rem; margin-top:4px; color:var(--text-muted);">Plural: <b>die ${word.german}${word.plural === '-' ? '' : word.plural}</b></div>` : ''}
+        </div>
+        <div class="article-btn-row">
+          <button class="article-select-btn btn-der" data-art="der">der</button>
+          <button class="article-select-btn btn-die" data-art="die">die</button>
+          <button class="article-select-btn btn-das" data-art="das">das</button>
+        </div>
+      `;
+      lessonStepContainer.innerHTML = html;
+
+      const artButtons = document.querySelectorAll(".article-select-btn");
+      let answered = false;
+      artButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          if (answered) return;
+          answered = true;
+          const chosen = btn.getAttribute("data-art");
+          const isCorrect = chosen === word.article;
+
+          if (isCorrect) {
+            btn.style.boxShadow = "0 0 0 4px #10b981";
+            sounds.playCorrect();
+            triggerHaptic(35);
+            recordArticleStat(word.article, true);
+            let ruleDesc = word.ruleNote || `Correct! ${word.article} ${word.german}`;
+            if (word.exception) ruleDesc = `${word.exception}. ${ruleDesc}`;
+            showFeedback(true, `Richtig: ${word.article} ${word.german}!`, ruleDesc, () => {
+              currentLesson.completedSteps++;
+              currentLesson.currentStep = 4;
+              updateLessonProgress();
+              renderCurrentStep();
+            });
+          } else {
+            btn.classList.add("shake");
+            sounds.playWrong();
+            triggerHaptic(80);
+            recordArticleStat(word.article, false);
+            handleMistake(word);
+            let ruleDesc = `Remember: <b>${word.article} ${word.german}</b>. ${word.ruleNote || ""}`;
+            if (word.exception) ruleDesc = `<b>${word.exception}</b><br>${ruleDesc}`;
+            showFeedback(false, `Oops! It's "${word.article} ${word.german}"`, ruleDesc, () => {
+              currentLesson.completedSteps++;
+              currentLesson.currentStep = 4;
+              updateLessonProgress();
+              renderCurrentStep();
+            });
+          }
+        });
+      });
+    }
+
+    /* STEP 4: FILL IN THE BLANK (Cloze Goethe Sentence) */
+    function renderFillBlankStep(word) {
+      // Create cloze sentence by replacing the word (case-insensitive) with blank
+      const regex = new RegExp(`\\b${word.german}\\b`, "i");
+      let sentenceHtml = word.example_de;
+      if (regex.test(word.example_de)) {
+        sentenceHtml = word.example_de.replace(regex, `<span class="cloze-blank">_____</span>`);
+      } else {
+        // Fallback if inflected or separable
+        sentenceHtml = `[ ... <span class="cloze-blank">_____</span> ... ]`;
+      }
+
+      // Pick 3 distractors
+      let pool = LEVEL_1.filter(w => w.id !== word.id && w.pos === word.pos);
+      if (pool.length < 3) pool = LEVEL_1.filter(w => w.id !== word.id);
+      shuffleArray(pool);
+      const options = [word.german, pool[0].german, pool[1].german, pool[2].german];
+      shuffleArray(options);
+
+      const html = `
+        <div class="mcq-question-header">
+          <span style="font-size:0.85rem; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Step 4 • Context Sentence</span>
+        </div>
+        <div class="cloze-sentence-card">
+          <div class="cloze-german">${sentenceHtml}</div>
+          <div class="cloze-english">${word.example_en}</div>
+          <button class="audio-btn" id="cloze-audio-btn" style="margin:12px auto 0 auto;">🔊 Hear Sentence</button>
+        </div>
+        <div class="mcq-grid" id="cloze-options">
+          ${options.map(opt => `
+            <div class="mcq-option" data-val="${opt}">
+              <div style="font-weight:800; font-size:1.1rem;">${opt}</div>
+              <span>👉</span>
+            </div>
+          `).join("")}
+        </div>
+      `;
+      lessonStepContainer.innerHTML = html;
+
+      document.getElementById("cloze-audio-btn").addEventListener("click", () => {
+        triggerHaptic(20);
+        speakGerman(word.example_de);
+      });
+
+      const opts = document.querySelectorAll("#cloze-options .mcq-option");
+      let answered = false;
+      opts.forEach(btn => {
+        btn.addEventListener("click", () => {
+          if (answered) return;
+          answered = true;
+          const chosen = btn.getAttribute("data-val");
+          if (chosen === word.german) {
+            btn.classList.add("correct");
+            sounds.playCorrect();
+            triggerHaptic(30);
+            showFeedback(true, "Ausgezeichnet!", `Full sentence: "${word.example_de}"`, () => {
+              currentLesson.completedSteps++;
+              currentLesson.currentStep = 5;
+              updateLessonProgress();
+              renderCurrentStep();
+            });
+          } else {
+            btn.classList.add("wrong");
+            opts.forEach(o => {
+              if (o.getAttribute("data-val") === word.german) o.classList.add("correct");
+            });
+            sounds.playWrong();
+            triggerHaptic(75);
+            handleMistake(word);
+            showFeedback(false, "Incorrect", `The correct word is <b>${word.german}</b>.<br>"${word.example_de}"`, () => {
+              currentLesson.completedSteps++;
+              currentLesson.currentStep = 5;
+              updateLessonProgress();
+              renderCurrentStep();
+            });
+          }
+        });
+      });
+    }
+
+    /* STEP 5: TYPING RECALL with Umlaut Helpers */
+    function renderTypingStep(word) {
+      const isNoun = word.pos === "noun" && word.article;
+      const html = `
+        <div class="mcq-question-header">
+          <span style="font-size:0.85rem; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Step 5 • Recall & Type</span>
+          <div class="card-emoji" style="font-size:3.5rem; margin-top:8px;">${word.emoji}</div>
+          <div style="font-size:1.4rem; font-weight:800; margin-top:6px;">${word.meaning_en}</div>
+          <div style="font-size:1.15rem; color:var(--primary); font-weight:700;">${word.meaning_hi}</div>
+          ${isNoun ? `<div style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">Hint: Article is <b>${word.article}</b></div>` : ''}
+        </div>
+        <div class="typing-card">
+          <input type="text" class="typing-input" id="typing-answer-input" placeholder="Type in German..." autocomplete="off" autocorrect="off" autocapitalize="none">
+          <div class="umlaut-helpers-row">
+            <button class="umlaut-btn" data-char="ä">ä</button>
+            <button class="umlaut-btn" data-char="ö">ö</button>
+            <button class="umlaut-btn" data-char="ü">ü</button>
+            <button class="umlaut-btn" data-char="ß">ß</button>
+            <button class="umlaut-btn" data-char="Ä">Ä</button>
+            <button class="umlaut-btn" data-char="Ö">Ö</button>
+            <button class="umlaut-btn" data-char="Ü">Ü</button>
+          </div>
+          <button class="btn-primary" id="submit-typing-btn" style="width:100%;">Check Answer</button>
+        </div>
+      `;
+      lessonStepContainer.innerHTML = html;
+
+      const input = document.getElementById("typing-answer-input");
+      input.focus();
+
+      // Umlaut helper insertion
+      document.querySelectorAll(".umlaut-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const char = btn.getAttribute("data-char");
+          input.value += char;
+          input.focus();
+        });
+      });
+
+      function checkTyping() {
+        const raw = input.value.trim();
+        if (!raw) return;
+
+        // Normalization for tolerant checking
+        const targetClean = word.german.toLowerCase();
+        let userClean = raw.toLowerCase();
+        // Remove article if user typed it
+        userClean = userClean.replace(/^(der|die|das)\\s+/, "");
+
+        const exactMatch = userClean === targetClean;
+        // Tolerant match for missing umlauts: ae->ä, a->ä, oe->ö, o->ö, ue->ü, u->ü, ss->ß
+        const normalizedTarget = targetClean.replace(/ä/g, "a").replace(/ö/g, "o").replace(/ü/g, "u").replace(/ß/g, "ss");
+        const normalizedUser = userClean.replace(/ä/g, "a").replace(/ö/g, "o").replace(/ü/g, "u").replace(/ß/g, "ss");
+        const nearMatch = !exactMatch && (normalizedUser === normalizedTarget);
+
+        if (exactMatch || nearMatch) {
+          sounds.playCorrect();
+          triggerHaptic(30);
+          let note = `Perfect! <b>${word.article ? word.article + ' ' : ''}${word.german}</b>`;
+          if (nearMatch) {
+            note = `Nearly right! Keep in mind the exact spelling: <b>${word.german}</b>.`;
+          }
+          showFeedback(true, "Richtig!", note, () => {
+            currentLesson.completedSteps++;
+            currentLesson.currentIndex++;
+            currentLesson.currentStep = 1;
+            updateLessonProgress();
+            renderCurrentStep();
+          });
+        } else {
+          sounds.playWrong();
+          triggerHaptic(80);
+          handleMistake(word);
+          showFeedback(false, "Correct Spelling:", `<b>${word.article ? word.article + ' ' : ''}${word.german}</b><br>You typed: "${raw}"`, () => {
+            currentLesson.completedSteps++;
+            currentLesson.currentIndex++;
+            currentLesson.currentStep = 1;
+            updateLessonProgress();
+            renderCurrentStep();
+          });
+        }
+      }
+
+      document.getElementById("submit-typing-btn").addEventListener("click", checkTyping);
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") checkTyping();
+      });
+    }
+
+    /* STEP 6: MIXED REVIEW QUEUE */
+    function renderReviewStep() {
+      const word = currentLesson.reviewQueue.shift();
+      const html = `
+        <div class="mcq-question-header">
+          <span style="font-size:0.85rem; font-weight:800; color:#f59e0b; text-transform:uppercase;">Mixed Review • Reinforce Missed Word</span>
+          <div class="card-emoji" style="font-size:3.5rem; margin-top:8px;">${word.emoji}</div>
+          <div class="mcq-prompt-word">${word.meaning_en}</div>
+          <div style="font-size:1.1rem; color:var(--text-muted);">${word.meaning_hi}</div>
+        </div>
+        <div style="width:100%; margin-top:20px;">
+          <input type="text" class="typing-input" id="review-input" placeholder="Type German word..." autocomplete="off">
+          <div class="umlaut-helpers-row" style="justify-content:center;">
+            <button class="umlaut-btn" data-char="ä">ä</button>
+            <button class="umlaut-btn" data-char="ö">ö</button>
+            <button class="umlaut-btn" data-char="ü">ü</button>
+            <button class="umlaut-btn" data-char="ß">ß</button>
+          </div>
+          <button class="btn-primary" id="review-submit-btn" style="width:100%;">Verify Review</button>
+        </div>
+      `;
+      lessonStepContainer.innerHTML = html;
+
+      const input = document.getElementById("review-input");
+      input.focus();
+      document.querySelectorAll(".umlaut-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          input.value += btn.getAttribute("data-char");
+          input.focus();
+        });
+      });
+
+      function checkReview() {
+        const val = input.value.trim().toLowerCase().replace(/^(der|die|das)\\s+/, "");
+        if (val === word.german.toLowerCase()) {
+          sounds.playCorrect();
+          triggerHaptic(30);
+          showFeedback(true, "Review Mastered!", `Great job remembering <b>${word.german}</b>!`, () => {
+            renderCurrentStep();
+          });
+        } else {
+          sounds.playWrong();
+          triggerHaptic(70);
+          currentLesson.reviewQueue.push(word);
+          showFeedback(false, "Still tricky?", `The word is <b>${word.german}</b> (${word.meaning_en}). We will test it once more!`, () => {
+            renderCurrentStep();
+          });
+        }
+      }
+
+      document.getElementById("review-submit-btn").addEventListener("click", checkReview);
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") checkReview();
+      });
+    }
+
+    function completeLesson() {
+      sounds.playFanfare();
+      launchConfetti();
+
+      // Record completion
+      const lessonKey = `${currentLesson.unitId}_${currentLesson.lessonId}`;
+      state.completedLessons[lessonKey] = 3;
+      state.xp += 25;
+
+      // Mark mastered words (if not already)
+      currentLesson.words.forEach(w => {
+        if (!currentLesson.missedWordIds.has(w.id)) {
+          if (!state.masteredWords.includes(w.id)) state.masteredWords.push(w.id);
+        }
+      });
+      saveState();
+
+      const html = `
+        <div style="text-align:center; padding:30px 10px; width:100%;">
+          <div style="font-size:4rem; margin-bottom:12px;">🎉</div>
+          <h2 style="font-size:1.9rem; font-weight:900; margin-bottom:6px;">Lesson Completed!</h2>
+          <p style="color:var(--text-muted); margin-bottom:20px;">You earned +25 XP and strengthened your B1 vocabulary!</p>
+          <div style="background:var(--surface-color); border:1.5px solid var(--border-color); border-radius:var(--radius-lg); padding:20px; margin-bottom:24px; box-shadow:var(--shadow-sm);">
+            <div style="display:flex; justify-content:space-around;">
+              <div>
+                <div style="font-size:1.8rem; font-weight:900; color:var(--accent-xp);">+25</div>
+                <div style="font-size:0.75rem; text-transform:uppercase; color:var(--text-muted); font-weight:700;">XP Earned</div>
+              </div>
+              <div>
+                <div style="font-size:1.8rem; font-weight:900; color:#10b981;">5/5</div>
+                <div style="font-size:0.75rem; text-transform:uppercase; color:var(--text-muted); font-weight:700;">Words Learned</div>
+              </div>
+              <div>
+                <div style="font-size:1.8rem; font-weight:900; color:var(--accent-heart);">❤️ ${state.hearts}</div>
+                <div style="font-size:0.75rem; text-transform:uppercase; color:var(--text-muted); font-weight:700;">Hearts Left</div>
+              </div>
+            </div>
+          </div>
+          <button class="btn-primary" id="finish-lesson-btn" style="width:100%;">
+            Return to Path →
+          </button>
+        </div>
+      `;
+      lessonStepContainer.innerHTML = html;
+      document.getElementById("finish-lesson-btn").addEventListener("click", () => {
+        lessonViewport.style.display = "none";
+        renderUnitsPath();
+        updateHeaderStats();
+      });
+    }
+
+    function handleMistake(word) {
+      currentLesson.missedWordIds.add(word.id);
+      currentLesson.reviewQueue.push(word);
+
+      // Decrement hearts
+      if (state.hearts > 0) {
+        state.hearts--;
+        updateLessonProgress();
+      }
+
+      // Add to Mistake Notebook
+      if (!state.mistakes[word.id]) {
+        state.mistakes[word.id] = { count: 0, lastSeen: Date.now() };
+      }
+      state.mistakes[word.id].count++;
+      state.mistakes[word.id].lastSeen = Date.now();
+      saveState();
+    }
+
+    function recordArticleStat(art, isCorrect) {
+      if (!state.articleStats[art]) state.articleStats[art] = { c: 0, w: 0 };
+      if (isCorrect) state.articleStats[art].c++;
+      else state.articleStats[art].w++;
+      saveState();
+    }
+
+    /* Feedback Drawer Controller */
+    let feedbackCallback = null;
+    function showFeedback(isCorrect, title, desc, onContinue) {
+      feedbackDrawer.className = `feedback-drawer ${isCorrect ? "correct" : "wrong"} open`;
+      document.getElementById("feedback-title").innerHTML = isCorrect ? `✓ ${title}` : `✕ ${title}`;
+      document.getElementById("feedback-desc").innerHTML = desc;
+      feedbackCallback = onContinue;
+    }
+    document.getElementById("feedback-continue-btn").addEventListener("click", () => {
+      feedbackDrawer.classList.remove("open");
+      if (typeof feedbackCallback === "function") {
+        feedbackCallback();
+      }
+    });
+
+    /* =====================================================================
+       UNIT BOSS QUIZ (20 Mixed Questions, 80%+ Pass Mark to Unlock Next Unit)
+       ===================================================================== */
+    function startBossQuiz(unitId) {
+      const startIdx = (unitId - 1) * 25;
+      const unitWords = LEVEL_1.slice(startIdx, startIdx + 25);
+
+      // Create 20 mixed questions
+      const shuffled = [...unitWords];
+      shuffleArray(shuffled);
+      const quizWords = shuffled.slice(0, 20);
+
+      let qIndex = 0;
+      let score = 0;
+      let missed = [];
+
+      lessonViewport.style.display = "flex";
+
+      function renderQuizQuestion() {
+        feedbackDrawer.classList.remove("open");
+        lessonProgressFill.style.width = Math.round((qIndex / 20) * 100) + "%";
+        lessonHeartsVal.innerText = `Score: ${score}/${qIndex}`;
+
+        if (qIndex >= 20) {
+          finishBossQuiz();
+          return;
+        }
+
+        const word = quizWords[qIndex];
+        const qType = (qIndex % 3); // 0: Meaning MCQ, 1: Article MCQ (or meaning if not noun), 2: Sentence Cloze
+
+        if (qType === 1 && word.pos === "noun" && word.article) {
+          // Article MCQ
+          lessonStepContainer.innerHTML = `
+            <div class="mcq-question-header">
+              <span style="font-size:0.85rem; font-weight:800; color:var(--accent-xp);">👑 Boss Quiz • Q ${qIndex + 1}/20</span>
+              <div class="card-emoji" style="font-size:3.5rem; margin-top:8px;">${word.emoji}</div>
+              <div class="mcq-prompt-word">_____ ${word.german}</div>
+              <div style="color:var(--text-muted); font-size:1rem;">${word.meaning_en}</div>
+            </div>
+            <div class="article-btn-row">
+              <button class="article-select-btn btn-der" data-art="der">der</button>
+              <button class="article-select-btn btn-die" data-art="die">die</button>
+              <button class="article-select-btn btn-das" data-art="das">das</button>
+            </div>
+          `;
+          document.querySelectorAll(".article-select-btn").forEach(btn => {
+            btn.onclick = () => {
+              const art = btn.getAttribute("data-art");
+              if (art === word.article) {
+                score++;
+                sounds.playCorrect();
+                showFeedback(true, "Richtig!", `${word.article} ${word.german} is correct.`, () => {
+                  qIndex++;
+                  renderQuizQuestion();
+                });
+              } else {
+                missed.push(word);
+                sounds.playWrong();
+                showFeedback(false, "Wrong Article", `It is <b>${word.article} ${word.german}</b>.`, () => {
+                  qIndex++;
+                  renderQuizQuestion();
+                });
+              }
+            };
+          });
+        } else if (qType === 2) {
+          // Cloze MCQ
+          let pool = LEVEL_1.filter(w => w.id !== word.id && w.pos === word.pos);
+          if (pool.length < 3) pool = LEVEL_1.filter(w => w.id !== word.id);
+          shuffleArray(pool);
+          const opts = [word.german, pool[0].german, pool[1].german, pool[2].german];
+          shuffleArray(opts);
+
+          lessonStepContainer.innerHTML = `
+            <div class="mcq-question-header">
+              <span style="font-size:0.85rem; font-weight:800; color:var(--accent-xp);">👑 Boss Quiz • Q ${qIndex + 1}/20</span>
+            </div>
+            <div class="cloze-sentence-card">
+              <div class="cloze-german">${word.example_de.replace(new RegExp(`\\b${word.german}\\b`, "i"), `<span class="cloze-blank">_____</span>`)}</div>
+              <div class="cloze-english">${word.example_en}</div>
+            </div>
+            <div class="mcq-grid" id="quiz-cloze-opts">
+              ${opts.map(o => `<div class="mcq-option" data-val="${o}"><b>${o}</b> <span>👉</span></div>`).join("")}
+            </div>
+          `;
+          document.querySelectorAll("#quiz-cloze-opts .mcq-option").forEach(btn => {
+            btn.onclick = () => {
+              if (btn.getAttribute("data-val") === word.german) {
+                score++;
+                sounds.playCorrect();
+                showFeedback(true, "Correct Word!", word.example_de, () => {
+                  qIndex++;
+                  renderQuizQuestion();
+                });
+              } else {
+                missed.push(word);
+                sounds.playWrong();
+                showFeedback(false, "Incorrect", `Correct word: <b>${word.german}</b>`, () => {
+                  qIndex++;
+                  renderQuizQuestion();
+                });
+              }
+            };
+          });
+        } else {
+          // Meaning MCQ
+          let pool = LEVEL_1.filter(w => w.id !== word.id && w.pos === word.pos);
+          if (pool.length < 3) pool = LEVEL_1.filter(w => w.id !== word.id);
+          shuffleArray(pool);
+          const opts = [word, pool[0], pool[1], pool[2]];
+          shuffleArray(opts);
+
+          lessonStepContainer.innerHTML = `
+            <div class="mcq-question-header">
+              <span style="font-size:0.85rem; font-weight:800; color:var(--accent-xp);">👑 Boss Quiz • Q ${qIndex + 1}/20</span>
+              <div class="card-emoji" style="font-size:3.5rem; margin-top:8px;">${word.emoji}</div>
+              <div class="mcq-prompt-word">${word.article ? word.article + ' ' : ''}${word.german}</div>
+            </div>
+            <div class="mcq-grid" id="quiz-meaning-opts">
+              ${opts.map(o => `
+                <div class="mcq-option" data-id="${o.id}">
+                  <div>
+                    <div style="font-weight:800;">${o.meaning_en}</div>
+                    <div style="font-size:0.85rem; color:var(--text-muted);">${o.meaning_hi}</div>
+                  </div>
+                  <span>●</span>
+                </div>
+              `).join("")}
+            </div>
+          `;
+          document.querySelectorAll("#quiz-meaning-opts .mcq-option").forEach(btn => {
+            btn.onclick = () => {
+              if (parseInt(btn.getAttribute("data-id")) === word.id) {
+                score++;
+                sounds.playCorrect();
+                showFeedback(true, "Richtig!", `${word.meaning_en} • ${word.meaning_hi}`, () => {
+                  qIndex++;
+                  renderQuizQuestion();
+                });
+              } else {
+                missed.push(word);
+                sounds.playWrong();
+                showFeedback(false, "Incorrect", `<b>${word.german}</b> = ${word.meaning_en}`, () => {
+                  qIndex++;
+                  renderQuizQuestion();
+                });
+              }
+            };
+          });
+        }
+      }
+
+      function finishBossQuiz() {
+        const pct = Math.round((score / 20) * 100);
+        const passed = pct >= 80;
+
+        if (passed) {
+          sounds.playFanfare();
+          launchConfetti();
+          state.xp += 100;
+          state.completedUnits[unitId] = { passed: true, score: pct };
+          // Unlock next unit if exists
+          if (unitId < 6 && !state.unlockedUnits.includes(unitId + 1)) {
+            state.unlockedUnits.push(unitId + 1);
+          }
+          saveState();
+        } else {
+          sounds.playWrong();
+        }
+
+        lessonStepContainer.innerHTML = `
+          <div style="text-align:center; padding:30px 10px; width:100%;">
+            <div style="font-size:4rem; margin-bottom:12px;">${passed ? "🏆" : "💪"}</div>
+            <h2 style="font-size:1.85rem; font-weight:900; margin-bottom:6px;">
+              ${passed ? `Unit ${unitId} Conquered!` : `Almost there! (${pct}%)`}
+            </h2>
+            <p style="color:var(--text-muted); margin-bottom:20px;">
+              ${passed ? `Pass mark reached (${score}/20 = ${pct}%). Unit ${unitId < 6 ? unitId + 1 : unitId} is now UNLOCKED!` : `You need 80% (16/20) to unlock the next unit. You scored ${score}/20.`}
+            </p>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              ${!passed && missed.length > 0 ? `
+                <button class="btn-primary" id="retry-missed-btn">
+                  Retry Missed Questions (${missed.length})
+                </button>
+              ` : ''}
+              <button class="btn-secondary" id="exit-quiz-btn">
+                Return to Path
+              </button>
+            </div>
+          </div>
+        `;
+
+        if (!passed && missed.length > 0) {
+          document.getElementById("retry-missed-btn").onclick = () => {
+            quizWords.length = 0;
+            quizWords.push(...missed);
+            while (quizWords.length < 20) {
+              quizWords.push(unitWords[Math.floor(Math.random() * unitWords.length)]);
+            }
+            qIndex = 0;
+            score = 0;
+            missed = [];
+            renderQuizQuestion();
+          };
+        }
+
+        document.getElementById("exit-quiz-btn").onclick = () => {
+          lessonViewport.style.display = "none";
+          renderUnitsPath();
+          updateHeaderStats();
+        };
+      }
+
+      renderQuizQuestion();
+    }
+
+    /* =====================================================================
+       MISTAKE NOTEBOOK (Review & Practice to Refill Hearts)
+       ===================================================================== */
+    function renderMistakeNotebook() {
+      const container = document.getElementById("mistakes-list");
+      const mistakeIds = Object.keys(state.mistakes);
+      if (mistakeIds.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:40px 20px; color:var(--text-muted);">
+            <div style="font-size:3.5rem; margin-bottom:8px;">✨</div>
+            <div style="font-size:1.2rem; font-weight:800; color:var(--text-main);">No Mistakes Logged!</div>
+            <p style="margin-top:4px;">You have a clean sheet. Keep practicing your lessons!</p>
+          </div>
+        `;
+        return;
+      }
+
+      const mistakeWords = mistakeIds.map(id => LEVEL_1.find(w => w.id === parseInt(id))).filter(Boolean);
+      container.innerHTML = mistakeWords.map(w => `
+        <div class="word-list-row">
+          <div>
+            <div style="font-size:1.1rem; font-weight:800;">
+              ${w.article ? `<span class="article-${w.article}">${w.article} </span>` : ''}${w.german}
+              <span style="font-size:0.9rem;">${w.emoji}</span>
+            </div>
+            <div style="font-size:0.85rem; color:var(--text-muted);">${w.meaning_en} • ${w.meaning_hi}</div>
+            <div style="font-size:0.75rem; color:var(--primary); font-style:italic; margin-top:2px;">"${w.example_de}"</div>
+            ${w.ruleNote ? `<div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">💡 ${w.ruleNote}</div>` : ''}
+          </div>
+          <button class="icon-btn" onclick="speakGerman('${w.german}')" title="Pronounce">🔊</button>
+        </div>
+      `).join("");
+    }
+
+    document.getElementById("practice-mistakes-btn").addEventListener("click", () => {
+      const mistakeIds = Object.keys(state.mistakes);
+      if (mistakeIds.length === 0) {
+        alert("Your notebook has no mistakes to practice right now!");
+        return;
+      }
+      const words = mistakeIds.slice(0, 5).map(id => LEVEL_1.find(w => w.id === parseInt(id))).filter(Boolean);
+      startLesson(1, 999, words);
+      // Give 1 heart back
+      if (state.hearts < 3) state.hearts = Math.min(3, state.hearts + 1);
+      saveState();
+    });
+
+    /* =====================================================================
+       ARTICLE SPRINT (60-Second Rapid Noun Game)
+       ===================================================================== */
+    let sprintTimer = null;
+    let sprintSeconds = 60;
+    let sprintScore = 0;
+    let sprintCombo = 1;
+    let sprintStreak = 0;
+    let sprintNouns = [];
+    let currentSprintWord = null;
+
+    document.getElementById("start-sprint-btn").addEventListener("click", () => {
+      document.getElementById("sprint-intro").style.display = "none";
+      document.getElementById("sprint-game").style.display = "flex";
+      startArticleSprint();
+    });
+
+    function startArticleSprint() {
+      sprintNouns = LEVEL_1.filter(w => w.pos === "noun" && w.article);
+      shuffleArray(sprintNouns);
+      sprintSeconds = 60;
+      sprintScore = 0;
+      sprintCombo = 1;
+      sprintStreak = 0;
+
+      document.getElementById("sprint-time-left").innerText = sprintSeconds;
+      document.getElementById("sprint-current-score").innerText = sprintScore;
+      document.getElementById("sprint-combo-badge").innerText = `${sprintCombo}x Combo`;
+
+      nextSprintWord();
+
+      if (sprintTimer) clearInterval(sprintTimer);
+      sprintTimer = setInterval(() => {
+        sprintSeconds--;
+        document.getElementById("sprint-time-left").innerText = sprintSeconds;
+        const pct = (sprintSeconds / 60) * 100;
+        document.getElementById("sprint-timer-fill").style.width = pct + "%";
+
+        if (sprintSeconds <= 0) {
+          clearInterval(sprintTimer);
+          endArticleSprint();
+        }
+      }, 1000);
+    }
+
+    function nextSprintWord() {
+      if (sprintNouns.length === 0) {
+        sprintNouns = LEVEL_1.filter(w => w.pos === "noun" && w.article);
+        shuffleArray(sprintNouns);
+      }
+      currentSprintWord = sprintNouns.pop();
+      document.getElementById("sprint-word-emoji").innerText = currentSprintWord.emoji;
+      document.getElementById("sprint-word-german").innerText = currentSprintWord.german;
+      document.getElementById("sprint-word-meaning").innerText = `${currentSprintWord.meaning_en} • ${currentSprintWord.meaning_hi}`;
+    }
+
+    document.querySelectorAll(".sprint-container .article-select-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (!currentSprintWord || sprintSeconds <= 0) return;
+        const chosen = btn.getAttribute("data-art");
+        if (chosen === currentSprintWord.article) {
+          sounds.playCorrect();
+          triggerHaptic(20);
+          sprintStreak++;
+          if (sprintStreak >= 4) {
+            sprintCombo = Math.min(4, Math.floor(sprintStreak / 3) + 1);
+          }
+          sprintScore += (10 * sprintCombo);
+          recordArticleStat(currentSprintWord.article, true);
+        } else {
+          sounds.playWrong();
+          triggerHaptic(60);
+          sprintStreak = 0;
+          sprintCombo = 1;
+          recordArticleStat(currentSprintWord.article, false);
+          handleMistake(currentSprintWord);
+        }
+        document.getElementById("sprint-current-score").innerText = sprintScore;
+        document.getElementById("sprint-combo-badge").innerText = `${sprintCombo}x Combo`;
+        nextSprintWord();
+      });
+    });
+
+    function endArticleSprint() {
+      sounds.playFanfare();
+      launchConfetti();
+      state.xp += Math.floor(sprintScore / 5);
+      if (sprintScore > (state.sprintHighScore || 0)) {
+        state.sprintHighScore = sprintScore;
+      }
+      saveState();
+
+      alert(`Sprint Finished! 🎉\nFinal Score: ${sprintScore} points!\nEarned +${Math.floor(sprintScore / 5)} XP!`);
+      document.getElementById("sprint-intro").style.display = "block";
+      document.getElementById("sprint-game").style.display = "none";
+      document.getElementById("sprint-high-score").innerText = state.sprintHighScore;
+    }
+
+    /* =====================================================================
+       STATS & WORD BANK DIRECTORY
+       ===================================================================== */
+    function renderStatsPage() {
+      document.getElementById("stats-mastered-val").innerText = state.masteredWords.length;
+      document.getElementById("stats-xp-val").innerText = state.xp;
+      document.getElementById("stats-streak-val").innerText = state.streak;
+
+      // Calculate article percentages
+      let totalDer = (state.articleStats.der.c + state.articleStats.der.w) || 1;
+      let totalDie = (state.articleStats.die.c + state.articleStats.die.w) || 1;
+      let totalDas = (state.articleStats.das.c + state.articleStats.das.w) || 1;
+
+      let derPct = Math.round((state.articleStats.der.c / totalDer) * 100);
+      let diePct = Math.round((state.articleStats.die.c / totalDie) * 100);
+      let dasPct = Math.round((state.articleStats.das.c / totalDas) * 100);
+
+      document.getElementById("stat-der-pct").innerText = `${derPct}% (${state.articleStats.der.c}/${totalDer})`;
+      document.getElementById("stat-die-pct").innerText = `${diePct}% (${state.articleStats.die.c}/${totalDie})`;
+      document.getElementById("stat-das-pct").innerText = `${dasPct}% (${state.articleStats.das.c}/${totalDas})`;
+
+      document.getElementById("stat-der-bar").style.width = `${derPct}%`;
+      document.getElementById("stat-die-bar").style.width = `${diePct}%`;
+      document.getElementById("stat-das-bar").style.width = `${dasPct}%`;
+
+      const overallAccuracy = Math.round(((state.articleStats.der.c + state.articleStats.die.c + state.articleStats.das.c) /
+        (totalDer + totalDie + totalDas)) * 100);
+      document.getElementById("stats-accuracy-val").innerText = isNaN(overallAccuracy) ? "0%" : `${overallAccuracy}%`;
+
+      renderWordBankList();
+    }
+
+    let activeFilter = "all";
+    document.querySelectorAll(".filter-pill").forEach(pill => {
+      pill.addEventListener("click", () => {
+        document.querySelectorAll(".filter-pill").forEach(p => p.classList.remove("active"));
+        pill.classList.add("active");
+        activeFilter = pill.getAttribute("data-filter");
+        renderWordBankList();
+      });
+    });
+
+    document.getElementById("word-search-input").addEventListener("input", () => {
+      renderWordBankList();
+    });
+
+    function renderWordBankList() {
+      const container = document.getElementById("word-bank-list");
+      const query = document.getElementById("word-search-input").value.trim().toLowerCase();
+
+      let filtered = LEVEL_1.filter(w => {
+        if (query) {
+          const matchDe = w.german.toLowerCase().includes(query);
+          const matchEn = w.meaning_en.toLowerCase().includes(query);
+          const matchHi = w.meaning_hi.toLowerCase().includes(query);
+          if (!matchDe && !matchEn && !matchHi) return false;
+        }
+        if (activeFilter === "noun") return w.pos === "noun";
+        if (activeFilter === "verb") return w.pos === "verb";
+        if (activeFilter === "adj") return w.pos === "adj";
+        if (activeFilter === "mastered") return state.masteredWords.includes(w.id);
+        if (activeFilter === "skipped") return state.skippedWords.includes(w.id);
+        return true;
+      });
+
+      container.innerHTML = filtered.map(w => {
+        const isMastered = state.masteredWords.includes(w.id);
+        const isSkipped = state.skippedWords.includes(w.id);
+        return `
+          <div class="word-list-row">
+            <div>
+              <div style="font-size:1.05rem; font-weight:800;">
+                ${w.article ? `<span class="article-${w.article}">${w.article} </span>` : ''}${w.german}
+                <span style="font-size:0.9rem;">${w.emoji}</span>
+                ${isMastered ? '<span style="font-size:0.75rem; color:#10b981; margin-left:4px;">⭐ Mastered</span>' : ''}
+                ${isSkipped ? '<span style="font-size:0.75rem; color:#f59e0b; margin-left:4px;">⏭️ Skipped</span>' : ''}
+              </div>
+              <div style="font-size:0.85rem; color:var(--text-muted);">${w.meaning_en} • ${w.meaning_hi}</div>
+              <div style="font-size:0.75rem; color:var(--primary); font-style:italic;">"${w.example_de}"</div>
+            </div>
+            <div style="display:flex; gap:6px; align-items:center;">
+              <button class="icon-btn" onclick="speakGerman('${w.german}')" title="Pronounce">🔊</button>
+              ${isSkipped ? `
+                <button class="icon-btn" onclick="undoSkipWord(${w.id})" title="Undo Skip" style="font-size:0.75rem; width:auto; padding:0 8px; border-radius:var(--radius-sm);">Undo</button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    window.undoSkipWord = function(wordId) {
+      state.skippedWords = state.skippedWords.filter(id => id !== wordId);
+      saveState();
+      renderWordBankList();
+    };
+
+    /* Controls: Sound, Speed, Theme */
+    const speedBtn = document.getElementById("speed-toggle-btn");
+    speedBtn.addEventListener("click", () => {
+      state.settings.slowAudio = !state.settings.slowAudio;
+      speedBtn.innerText = state.settings.slowAudio ? "🐢" : "🐰";
+      triggerHaptic(20);
+      saveState();
+    });
+
+    const soundBtn = document.getElementById("sound-toggle-btn");
+    soundBtn.addEventListener("click", () => {
+      state.settings.sound = !state.settings.sound;
+      soundBtn.innerText = state.settings.sound ? "🔊" : "🔇";
+      triggerHaptic(20);
+      saveState();
+    });
+
+    const themeBtn = document.getElementById("theme-toggle-btn");
+    themeBtn.addEventListener("click", () => {
+      const isDark = document.body.getAttribute("data-theme") === "dark";
+      const nextTheme = isDark ? "light" : "dark";
+      document.body.setAttribute("data-theme", nextTheme);
+      state.settings.theme = nextTheme;
+      themeBtn.innerText = nextTheme === "dark" ? "☀️" : "🌙";
+      triggerHaptic(20);
+      saveState();
+    });
+
+    /* Utility */
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    // Init Theme & Audio settings on load
+    if (state.settings.theme === "dark" || (!state.settings.theme && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+      document.body.setAttribute("data-theme", "dark");
+      themeBtn.innerText = "☀️";
+    } else {
+      document.body.setAttribute("data-theme", "light");
+      themeBtn.innerText = "🌙";
+    }
+    speedBtn.innerText = state.settings.slowAudio ? "🐢" : "🐰";
+    soundBtn.innerText = state.settings.sound ? "🔊" : "🔇";
+
+    // Initialize UI
+    renderUnitsPath();
+    updateHeaderStats();
+  </script>
+</body>
+</html>

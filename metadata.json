@@ -1,0 +1,6 @@
+{
+  "name": "B1 Wortschatz Trainer",
+  "description": "Duolingo-style Goethe-Zertifikat B1 German vocabulary trainer with Hindi and English meanings, article rules, quizzes, and spaced repetition.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
